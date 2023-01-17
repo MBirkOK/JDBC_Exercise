@@ -1,0 +1,12 @@
+services:
+
+  postgres:
+    container_name: jdbc
+    image: postgres:12.2-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=cqacdkfw
+      - POSTGRES_PASSWORD=U4b4yfEAc8lrVgNst4YQ_799WBJ27wXn
+      - POSTGRES_DB=jdbc_exercise
