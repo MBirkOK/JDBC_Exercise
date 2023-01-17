@@ -9,7 +9,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 public class DatabaseHandler {
 
@@ -52,6 +55,7 @@ public class DatabaseHandler {
                     preparedStatement.setString(3, ((Employee)o).getLastName());
                     preparedStatement.setDate(4, Date.valueOf(((Employee)o).getBirthdate()));
                     preparedStatement.executeUpdate();
+                    preparedStatement.close();
                     return o;
                 case "class domain.Inventory":
                     String inventorySql = "INSERT INTO tab_exercise_inventory(description, procurement, worth, employee_nr) VALUES  (?,?,?,?)";
@@ -61,6 +65,7 @@ public class DatabaseHandler {
                     inventoryPreparedStatement.setDouble(3, ((Inventory)o).getWorth());
                     inventoryPreparedStatement.setInt(4, ((Inventory)o).getEmployee().getPersonalnumber());
                     inventoryPreparedStatement.executeUpdate();
+                    inventoryPreparedStatement.close();
                     return o;
             }
         } catch (Exception e) {
@@ -71,4 +76,31 @@ public class DatabaseHandler {
         return 0;
     }
 
+    public List<Employee> findByFirstName(String name) throws SQLException {
+        String findEmployee = "SELECT pers_nr, first_name, last_name, birthday from tab_exercise_employee where first_name like ? ORDER BY first_name, last_name";
+        PreparedStatement preparedStatement = establishConnection().prepareStatement(findEmployee);
+        preparedStatement.setString(1, name);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<Employee> employeeList = new ArrayList<>();
+        while(resultSet.next()){
+            employeeList.add(new Employee(resultSet.getInt(1), resultSet.getString(2),
+                resultSet.getString(3), resultSet.getDate(4).toLocalDate()));
+        }
+        return employeeList;
+    }
+
+    public List<Inventory> findInventoryByName(String name) throws SQLException {
+        String findInventory = "SELECT id, description, procurement, worth, pers_nr, first_name, last_name, birthday from tab_exercise_inventory, " +
+            "tab_exercise_employee where description like ? AND tab_exercise_employee.pers_nr = tab_exercise_inventory.employee_nr order by first_name, last_name";
+        PreparedStatement preparedStatement = establishConnection().prepareStatement(findInventory);
+        preparedStatement.setString(1, name);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<Inventory> inventories = new ArrayList<>();
+        while(resultSet.next()){
+            Employee found = new Employee(resultSet.getInt(5), resultSet.getString(6), resultSet.getString(7), resultSet.getDate(8).toLocalDate());
+            inventories.add(new Inventory(resultSet.getInt(1), resultSet.getString(2), resultSet.getDate(3).toLocalDate(),
+                resultSet.getDouble(4),found));
+        }
+        return inventories;
+    }
 }

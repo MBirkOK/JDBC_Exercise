@@ -1,6 +1,10 @@
 package domain;
 
+import infrastructure.DatabaseHandler;
+
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 
 public class Inventory {
     private int id;
@@ -35,5 +39,10 @@ public class Inventory {
 
     public Employee getEmployee() {
         return employee;
+    }
+
+    public static List<Inventory> findInventoryByName(String name) throws SQLException, ClassNotFoundException {
+        DatabaseHandler databaseHandler = new DatabaseHandler();
+        return databaseHandler.findInventoryByName(name);
     }
 }

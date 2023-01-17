@@ -10,8 +10,20 @@ import java.util.Random;
 
 public class main {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        List<Employee> employeeList = generateEmployees();
-        generateInventory(employeeList);
+        //List<Employee> employeeList = generateEmployees();
+        //generateInventory(employeeList);
+
+        List<Employee> findHim = Employee.findEmployeeByFirstName("Dieter");
+
+        for(Employee employee: findHim){
+            System.out.println(employee.getPersonalnumber()+", "+employee.getFirstName()+", "+employee.getLastName()+", "+employee.getBirthdate().toString());
+        }
+
+        List<Inventory> findIt = Inventory.findInventoryByName("Fee Fii");
+        System.out.println("---------------");
+        for(Inventory inventory: findIt){
+            System.out.println(inventory.getDescription()+", "+inventory.getEmployee().getPersonalnumber()+", "+inventory.getEmployee().getLastName());
+        }
     }
 
 

@@ -1,6 +1,10 @@
 package domain;
 
+import infrastructure.DatabaseHandler;
+
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.List;
 
 public class Employee {
 
@@ -30,5 +34,10 @@ public class Employee {
 
     public LocalDate getBirthdate() {
         return birthdate;
+    }
+
+    public static List<Employee> findEmployeeByFirstName(String firstName) throws SQLException, ClassNotFoundException {
+        DatabaseHandler databaseHandler = new DatabaseHandler();
+        return databaseHandler.findByFirstName(firstName);
     }
 }
