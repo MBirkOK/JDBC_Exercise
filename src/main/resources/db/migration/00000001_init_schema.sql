@@ -16,3 +16,5 @@ CREATE TABLE tab_exercise_inventory (
                                         employee_nr int,
                                         CONSTRAINT FK_EXERCISE_EMPLOYEE_NR_INVENTORY FOREIGN KEY (employee_nr) REFERENCES tab_exercise_employee(pers_nr)
 );
+
+--Prefixe für Spalten bspw. emp_pers_nr, inv_id
