@@ -1,7 +1,8 @@
 package infrastructure;
 
-import domain.Employee;
-import domain.Inventory;
+import domain.employment.Employee;
+import domain.employment.Resident;
+import domain.premises.Ward;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -9,6 +10,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Properties;
 
 public class DatabaseHandler {
@@ -37,38 +40,53 @@ public class DatabaseHandler {
      * This method gets an object either of type employee or of type inventory. Depens on of which type of class
      * the object is, the method to safe it in persistence differs.
      *
-     * @param o
+     * @param employee
      * @return the original Object
      * @throws SQLException
      */
-    public Object safeObject(Object o) throws SQLException {
+    public Employee safeEmployee(Employee employee) throws SQLException {
         try {
-            switch (o.getClass().toString()) {
-                case "class domain.Employee":
-                    String sql = "INSERT INTO tab_exercise_employee(pers_nr, first_name, last_name, birthday) VALUES  (?,?,?,?)";
-                    PreparedStatement preparedStatement = establishConnection().prepareStatement(sql);
-                    preparedStatement.setInt(1, ((Employee) o).getPersonalnumber());
-                    preparedStatement.setString(2, ((Employee)o).getFirstName());
-                    preparedStatement.setString(3, ((Employee)o).getLastName());
-                    preparedStatement.setDate(4, Date.valueOf(((Employee)o).getBirthdate()));
-                    preparedStatement.executeUpdate();
-                    return o;
-                case "class domain.Inventory":
-                    String inventorySql = "INSERT INTO tab_exercise_inventory(description, procurement, worth, employee_nr) VALUES  (?,?,?,?)";
-                    PreparedStatement inventoryPreparedStatement = establishConnection().prepareStatement(inventorySql);
-                    inventoryPreparedStatement.setString(1, ((Inventory)o).getDescription());
-                    inventoryPreparedStatement.setDate(2, Date.valueOf(((Inventory)o).getProcurement()));
-                    inventoryPreparedStatement.setDouble(3, ((Inventory)o).getWorth());
-                    inventoryPreparedStatement.setInt(4, ((Inventory)o).getEmployee().getPersonalnumber());
-                    inventoryPreparedStatement.executeUpdate();
-                    return o;
-            }
+            String sql = "INSERT INTO tab_exercise_employee(pers_nr, first_name, last_name, birthday, ward_id, type) VALUES  (?,?,?,?,?,?)";
+            PreparedStatement preparedStatement = establishConnection().prepareStatement(sql);
+            preparedStatement.setInt(1, employee.getPersonalnumber());
+            preparedStatement.setString(2, employee.getFirstName());
+            preparedStatement.setString(3, employee.getLastName());
+            preparedStatement.setDate(4, Date.valueOf(employee.getBirthdate()));
+            preparedStatement.setInt(5, employee.getWard().getId());
+            preparedStatement.setString(6, employee.getClass().toString());
+            preparedStatement.executeUpdate();
+            return employee;
         } catch (Exception e) {
             System.out.println("Saving in Database failed");
-            return 0;
+            return new Employee(0, "", "", LocalDate.now(), 0, 0.0, 0);
         }
-        System.out.println("Saving failed");
-        return 0;
     }
 
+    public Employee findEmployeeById(int id) {
+        try {
+            String sql = "SELECT pers_nr, first_name, last_name, birthday, ward_id, type from tab_exercise_employee e INNER JOIN tab_exercise_ward on ward_id = tab_exercise_ward.id where pers_nr=?";
+            PreparedStatement preparedStatement = establishConnection().prepareStatement(sql);
+            ResultSet result = preparedStatement.executeQuery();
+            if (result.next() == false) {
+                //TODO don't return null
+                return null;
+            }
+            //TODO salary missing in DB
+            Ward ward;
+            if(result.getInt("pers_nr") == result.getInt("officer_id")){
+                ward = new Ward(result.getInt("ward_id"), null, null, null);
+            }
+            return Employee.createEmployeeByType(result.getInt("pers_nr"), result.getString("first_name"),
+                result.getString("last_name"), convertToLocalDateViaInstant(result.getDate("birthday")),
+                ward, null, result.getString("type"));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
+    }
 }
