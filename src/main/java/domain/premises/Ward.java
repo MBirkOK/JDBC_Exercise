@@ -21,4 +21,16 @@ public class Ward {
     public int getId() {
         return id;
     }
+
+    public MedicalOfficer getMedicalOfficer() {
+        return leading;
+    }
+
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public List<Employee> getWorksIn() {
+        return worksIn;
+    }
 }

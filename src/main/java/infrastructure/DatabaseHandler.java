@@ -1,7 +1,8 @@
 package infrastructure;
 
 import domain.employment.Employee;
-import domain.employment.Resident;
+import domain.employment.MedicalOfficer;
+import domain.premises.Room;
 import domain.premises.Ward;
 
 import java.sql.Connection;
@@ -12,7 +13,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class DatabaseHandler {
 
@@ -58,7 +62,7 @@ public class DatabaseHandler {
             return employee;
         } catch (Exception e) {
             System.out.println("Saving in Database failed");
-            return new Employee(0, "", "", LocalDate.now(), 0, 0.0, 0);
+            return new Employee(0, "", "", LocalDate.now(), null, 0.0);
         }
     }
 
@@ -72,10 +76,7 @@ public class DatabaseHandler {
                 return null;
             }
             //TODO salary missing in DB
-            Ward ward;
-            if(result.getInt("pers_nr") == result.getInt("officer_id")){
-                ward = new Ward(result.getInt("ward_id"), null, null, null);
-            }
+            Ward ward = findWardById(result.getInt("ward_id"));
             return Employee.createEmployeeByType(result.getInt("pers_nr"), result.getString("first_name"),
                 result.getString("last_name"), convertToLocalDateViaInstant(result.getDate("birthday")),
                 ward, null, result.getString("type"));
@@ -88,5 +89,82 @@ public class DatabaseHandler {
         return dateToConvert.toInstant()
             .atZone(ZoneId.systemDefault())
             .toLocalDate();
+    }
+
+
+    public Ward findWardById(int id) throws SQLException {
+        String sql = "SELECT * FROM tab_exercise_ward WHERE id = ?";
+        PreparedStatement preparedStatement = establishConnection().prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next() == false) {
+            //TODO dont return null
+            return null;
+        }
+        MedicalOfficer medicalOfficer = findMedicalById(resultSet.getInt("officer_id"));
+        List<Room> roomList = findRoomsByWardId(id);
+        List<Employee> worksIn = findEmployeesByWardId(id);
+        Ward ward = new Ward(resultSet.getInt("id"), medicalOfficer, roomList, worksIn);
+        ward.getMedicalOfficer().setWard(ward);
+        worksIn.stream().filter(e -> e.getPersonalnumber() != ward.getMedicalOfficer().getPersonalnumber())
+            .collect(Collectors.toList());
+        for(Employee employee: worksIn){
+            employee.setWard(ward);
+        }
+
+        return ward;
+    }
+
+    public MedicalOfficer findMedicalById(int id) throws SQLException {
+        String sql = "SELECT pers_nr, first_name, last_name, birthday FROM tab_exercise_employee WHERE pers_nr = ?";
+        PreparedStatement preparedStatement = establishConnection().prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next() == false) {
+            //TODO dont return null
+            return null;
+        }
+        //TODO salary missing in DB
+        return new MedicalOfficer(resultSet.getInt("pers_nr"), resultSet.getString("first_name"),
+            resultSet.getString("last_name"), convertToLocalDateViaInstant(resultSet.getDate("birthday")),
+            null, null);
+    }
+
+    public List<Room> findRoomsByWardId(int wardId) throws SQLException {
+        String sql = "SELECT id, amount_beds, ward_id FROM tab_exercise_room WHERE ward_id = ?";
+        PreparedStatement preparedStatement = establishConnection().prepareStatement(sql);
+        preparedStatement.setInt(1, wardId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        int lastRow = getSizeResultSet(resultSet);
+        List<Room> rooms = new ArrayList<>();
+        for (int i = 0; i < lastRow; i++) {
+            rooms.add(new Room(resultSet.getInt("id"), resultSet.getInt("amount_beds")));
+        }
+        return rooms;
+    }
+
+    private int getSizeResultSet(ResultSet set) throws SQLException {
+        set.last();
+        return set.getRow();
+    }
+
+    public List<Employee> findEmployeesByWardId(int wardId) throws SQLException {
+        String sql = "SELECT pers_nr, first_name, last_name, birthday FROM tab_exercise_employee WHERE ward_id = ?";
+        PreparedStatement preparedStatement = establishConnection().prepareStatement(sql);
+        preparedStatement.setInt(1, wardId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next() == false) {
+            //TODO dont return null
+            return null;
+        }
+        int lastRow = getSizeResultSet(resultSet);
+        List<Employee> employees = new ArrayList<>();
+        for (int i = 0; i < lastRow; i++) {
+            //TODO salary still doesnt exists in DB
+            employees.add(new Employee(resultSet.getInt("pers_nr"), resultSet.getString("first_name"), resultSet.getString("last_name"),
+                convertToLocalDateViaInstant(resultSet.getDate("birthday")), null, null));
+
+        }
+        return employees;
     }
 }
