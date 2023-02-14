@@ -59,4 +59,6 @@ public class Room {
     public void setPatientsInRoom(List<Patient> patientsInRoom) {
         this.patientsInRoom = patientsInRoom;
     }
+
+
 }

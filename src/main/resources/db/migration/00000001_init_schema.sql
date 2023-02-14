@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS tab_exercise_employee;
+DROP TABLE IF EXISTS tab_exercise_employee CASCADE;
 DROP TABLE IF EXISTS tab_exercise_inventory;
 
 CREATE TABLE tab_exercise_employee (

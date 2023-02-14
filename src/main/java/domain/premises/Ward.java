@@ -1,36 +1,27 @@
 package domain.premises;
 
-import domain.employment.Employee;
-import domain.employment.MedicalOfficer;
-
-import java.util.List;
-
 public class Ward {
     private int id;
-    private MedicalOfficer leading;
-    private List<Room> rooms;
-    private List<Employee> worksIn;
+    private String description;
 
-    public Ward(int id, MedicalOfficer leading, List<Room> rooms, List<Employee> worksIn) {
+    public Ward(int id, String description) {
         this.id = id;
-        this.leading = leading;
-        this.rooms = rooms;
-        this.worksIn = worksIn;
+        this.description = description;
+    }
+
+    public Ward(int id) {
+        this.id = id;
     }
 
     public int getId() {
         return id;
     }
 
-    public MedicalOfficer getMedicalOfficer() {
-        return leading;
+    public String getDescription() {
+        return description;
     }
 
-    public List<Room> getRooms() {
-        return rooms;
-    }
-
-    public List<Employee> getWorksIn() {
-        return worksIn;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

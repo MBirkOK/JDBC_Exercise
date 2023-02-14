@@ -43,9 +43,13 @@ public class Employee {
         return ward;
     }
 
-    public static Employee createEmployeeByType(int personalnumber, String firstName, String lastName, LocalDate birthdate, Ward myWard, Double salary, String type){
+    public Double getSalary() {
+        return salary;
+    }
+
+    public static Employee createEmployeeByType(int personalnumber, String firstName, String lastName, LocalDate birthdate, Ward myWard, Double salary, String type) {
         //TODO Query the Wards
-        switch (type){
+        switch (type) {
             case "domain.employment.MedicalOfficer":
                 return new MedicalOfficer(personalnumber, firstName, lastName, birthdate, myWard, salary);
             case "domain.employment.Nurse":
