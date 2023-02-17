@@ -107,13 +107,13 @@ public class EmployeeRepository {
 
         int resultSetSize = databaseHandler.getSizeResultSet(resultSet);
         Employee[] employees = new Employee[resultSetSize];
-        for(int i =0; i<resultSetSize; i++){
+        for (int i = 0; i < resultSetSize; i++) {
             Ward ward = wardRepository.findWardById(resultSet.getInt("ward_id"));
             employees[i] = new Employee(resultSet.getInt("pers_nr"), resultSet.getString("first_name"),
                 resultSet.getString("last_name"),
                 databaseHandler.convertDateToLocalDate(resultSet.getDate("birthday")), ward,
                 resultSet.getDouble("salary"));
-            if(!resultSet.next()){
+            if (!resultSet.next()) {
                 break;
             }
         }

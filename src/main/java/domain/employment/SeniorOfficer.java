@@ -14,7 +14,7 @@ public class SeniorOfficer extends Employee {
     }
 
     public SeniorOfficer(Employee employee) {
-        super(employee.getPersonalnumber(), employee.getFirstName(), employee.getLastName(), employee.getBirthdate(),employee.getWard(), employee.getSalary());
+        super(employee.getPersonalnumber(), employee.getFirstName(), employee.getLastName(), employee.getBirthdate(), employee.getWard(), employee.getSalary());
         this.responisbleFor = null;
     }
 

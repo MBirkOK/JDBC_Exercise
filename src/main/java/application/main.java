@@ -33,7 +33,7 @@ public class main {
         personalService = new PersonalService();
         hospitalService = new HospitalService();
 
-        if(hospitalService.findEmployeeWithId(1) == null){
+        if (hospitalService.findEmployeeWithId(1) == null) {
             generateSampleData();
         }
 
@@ -46,10 +46,9 @@ public class main {
             if (input.equals("create")) {
                 String[] patientData = Printer.getPatientData();
                 Patient patient = hospitalService.createStay(patientData);
-                System.out.println(patient.getId());
                 System.out.println("Bitte gib die Behandlungsart ein:");
                 String treatmentString = reader.readLine();
-                System.out.println("Welcher Oberarzt ist zuständig?");
+                System.out.println("Welcher Oberarzt ist zuständig? (ID)");
                 Employee officer = hospitalService.findEmployeeWithId(Integer.parseInt(reader.readLine()));
                 SeniorOfficer seniorOfficer = new SeniorOfficer(officer);
                 Treatment treatment = new Treatment(0, treatmentString, seniorOfficer, patient);
@@ -61,22 +60,21 @@ public class main {
                     new Ward(Integer.parseInt(personalData[3])), Double.valueOf(personalData[4]), personalData[5]);
             } else if (input.equals("payment")) {
                 Printer.printPaymentTable(personalService.showPayments());
-            } else if(input.equals("patients")){
+            } else if (input.equals("patients")) {
                 LocalDate startDate = Printer.getStartDate();
                 LocalDate endDate = Printer.getEndDate();
                 Printer.printPatientTable(hospitalService.getPatientsAtDate(startDate, endDate));
             } else if (input.equals("beds")) {
                 Printer.printBedUsage(hospitalService.getUsedBeds(Integer.parseInt(Printer.getWard()), Printer.getDate()));
             } else if (input.equals("meds")) {
-                    Printer.printMedUsage(hospitalService.getMedInTreatmentUsage());
-            } else if(input.equals("genders")){
-               Printer.printGenderTable(hospitalService.getGenderDivision());
+                Printer.printMedUsage(hospitalService.getMedInTreatmentUsage());
+            } else if (input.equals("genders")) {
+                Printer.printGenderTable(hospitalService.getGenderDivision());
             }
         }
     }
 
     private static void generateSampleData() throws SQLException, IOException {
-
         Patient patient = new Patient(1, "Marius", "Müller", LocalDate.now(), null, null, null, LocalDate.now(), LocalDate.now(), "M");
         List<Patient> patients = new ArrayList<>();
         patients.add(patient);

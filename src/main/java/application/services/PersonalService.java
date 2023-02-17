@@ -8,7 +8,6 @@ import domain.employment.Resident;
 import domain.employment.SeniorOfficer;
 import domain.employment.Specialist;
 import domain.exceptions.EmployeeTypeNotDefinedException;
-import domain.premises.Room;
 import domain.premises.Ward;
 import infrastructure.DatabaseHandler;
 import infrastructure.EmployeeRepository;

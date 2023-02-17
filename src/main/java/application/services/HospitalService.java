@@ -67,7 +67,7 @@ public class HospitalService {
         return treatmentRepository.safeTreatment(treatment);
     }
 
-    public Employee findEmployeeWithId(int id){
+    public Employee findEmployeeWithId(int id) {
         return employeeRepository.findEmployeeById(id);
     }
 
@@ -76,9 +76,9 @@ public class HospitalService {
         return toArray(patients);
     }
 
-    private Patient[] toArray(List<Patient> patients){
+    private Patient[] toArray(List<Patient> patients) {
         Patient[] patientArray = new Patient[patients.size()];
-        for(int i =0; i<patients.size();i++){
+        for (int i = 0; i < patients.size(); i++) {
             patientArray[i] = patients.get(i);
         }
         return patientArray;

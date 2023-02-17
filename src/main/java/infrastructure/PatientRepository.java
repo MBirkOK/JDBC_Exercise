@@ -5,7 +5,6 @@ import domain.employment.Employee;
 import domain.employment.Nurse;
 import domain.premises.Room;
 
-import java.awt.geom.RectangularShape;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -48,7 +47,7 @@ public class PatientRepository {
     }
 
     public List<Patient> getPatientsFromNurseId(int nurseId) throws SQLException, IOException {
-        String sql = "SELECT id, first_name, last_name, birthday, room_id, stay_start, stay_end FROM tab_exercise_patient WHERE nurse_id = ?";
+        String sql = "SELECT id, first_name, last_name, birthday, room_id, stay_start, stay_end, gender FROM tab_exercise_patient WHERE nurse_id = ?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, nurseId);
 
@@ -67,7 +66,7 @@ public class PatientRepository {
     }
 
     public List<Patient> getPatientBetweenDates(LocalDate startDate, LocalDate endDate) throws SQLException, IOException {
-        String sql = "SELECT id, first_name, last_name, birthday, room_id, nurse_id, stay_start, stay_end FROM tab_exercise_patient WHERE stay_start >=? AND stay_end <=?";
+        String sql = "SELECT id, first_name, last_name, birthday, room_id, nurse_id, stay_start, stay_end, gender FROM tab_exercise_patient WHERE stay_start >=? AND stay_end <=?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setDate(1, Date.valueOf(startDate));
         preparedStatement.setDate(2, Date.valueOf(endDate));

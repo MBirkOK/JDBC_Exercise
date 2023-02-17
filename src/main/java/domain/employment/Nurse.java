@@ -6,7 +6,7 @@ import domain.premises.Ward;
 import java.time.LocalDate;
 import java.util.List;
 
-public class Nurse extends Employee{
+public class Nurse extends Employee {
     private List<Patient> takesCareOf;
 
     public Nurse(int personalnumber, String firstName, String lastName, LocalDate birthdate, Ward myWard, Double salary, List<Patient> patients) {

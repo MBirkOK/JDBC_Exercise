@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.naming.ldap.PagedResultsControl;
 
 public class RoomRepository {
     private DatabaseHandler databaseHandler = new DatabaseHandler();
@@ -75,8 +74,8 @@ public class RoomRepository {
 
     public int[] calculateUsedBedsInWard(int wardId, LocalDate date) throws SQLException {
         String sql = "SELECT (SELECT SUM(amount_beds) " +
-                "FROM tab_exercise_room " +
-                "WHERE ward_id = ?) - COUNT(patient)" +
+            "FROM tab_exercise_room " +
+            "WHERE ward_id = ?) - COUNT(patient)" +
             "FROM tab_exercise_room room " +
             "LEFT OUTER JOIN tab_exercise_patient patient ON room.id = patient.room_id " +
             "WHERE ? BETWEEN patient.stay_start AND stay_end AND ward_id = ?";

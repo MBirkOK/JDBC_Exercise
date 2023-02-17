@@ -35,7 +35,7 @@ public class TreatmentRepository {
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
         List<String[]> medData = new ArrayList<>();
-        while(resultSet.next()){
+        while (resultSet.next()) {
             String[] data = new String[3];
             data[0] = String.valueOf(resultSet.getInt(1));
             data[1] = resultSet.getString(2);
