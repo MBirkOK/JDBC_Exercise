@@ -8,6 +8,7 @@ import domain.employment.Resident;
 import domain.employment.SeniorOfficer;
 import domain.employment.Specialist;
 import domain.exceptions.EmployeeTypeNotDefinedException;
+import domain.premises.Room;
 import domain.premises.Ward;
 import infrastructure.DatabaseHandler;
 import infrastructure.EmployeeRepository;
@@ -82,5 +83,10 @@ public class PersonalService {
         } else {
             return false;
         }
+    }
+
+    public Employee[] showPayments() throws SQLException {
+        Employee[] employees = employeeRepository.findAllEmployees();
+        return employees;
     }
 }

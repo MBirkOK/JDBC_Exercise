@@ -36,7 +36,6 @@ public class HospitalService {
     }
 
     public Patient createStay(String[] patientData) throws SQLException, IOException {
-
         //TODO findNurseById
         Employee employee = employeeRepository.findEmployeeById(Integer.parseInt(patientData[4]));
         List<Patient> patientList = patientRepository.getPatientsFromNurseId(employee.getPersonalnumber());
@@ -46,8 +45,10 @@ public class HospitalService {
         Room patientRoom = roomRepository.findRoomWithIdWithoutPatients(Integer.parseInt(patientData[3]));
         //TODO findRoomById
         Patient patient = new Patient(0, patientData[0], patientData[1], LocalDate.parse(patientData[2]),
-            null, patientRoom, nurse, LocalDate.parse(patientData[5]), LocalDate.parse(patientData[6]));
+            null, patientRoom, nurse, LocalDate.parse(patientData[5]), LocalDate.parse(patientData[6]), patientData[7]);
+        patientRepository.safePatient(patient);
         return patientRepository.safePatient(patient);
+
     }
 
     public Ward createWard(Ward ward) throws SQLException {
@@ -64,5 +65,35 @@ public class HospitalService {
 
     public Treatment createTreatment(Treatment treatment) throws SQLException {
         return treatmentRepository.safeTreatment(treatment);
+    }
+
+    public Employee findEmployeeWithId(int id){
+        return employeeRepository.findEmployeeById(id);
+    }
+
+    public Patient[] getPatientsAtDate(LocalDate startDate, LocalDate endDate) throws SQLException, IOException {
+        List<Patient> patients = patientRepository.getPatientBetweenDates(startDate, endDate);
+        return toArray(patients);
+    }
+
+    private Patient[] toArray(List<Patient> patients){
+        Patient[] patientArray = new Patient[patients.size()];
+        for(int i =0; i<patients.size();i++){
+            patientArray[i] = patients.get(i);
+        }
+        return patientArray;
+    }
+
+    public int[] getUsedBeds(int wardId, LocalDate date) throws SQLException {
+        int[] usedBeds = roomRepository.calculateUsedBedsInWard(wardId, date);
+        return usedBeds;
+    }
+
+    public List<String[]> getMedInTreatmentUsage() throws SQLException {
+        return treatmentRepository.calculateAmountOfMedicationInTreamtment();
+    }
+
+    public List<Integer> getGenderDivision() throws SQLException {
+        return patientRepository.calculateGenderDivision();
     }
 }

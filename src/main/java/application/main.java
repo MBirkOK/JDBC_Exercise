@@ -12,9 +12,6 @@ import domain.employment.SeniorOfficer;
 import domain.exceptions.EmployeeTypeNotDefinedException;
 import domain.premises.Room;
 import domain.premises.Ward;
-import infrastructure.EmployeeRepository;
-import infrastructure.RoomRepository;
-import infrastructure.WardRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,10 +32,10 @@ public class main {
     public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException, EmployeeTypeNotDefinedException {
         personalService = new PersonalService();
         hospitalService = new HospitalService();
-        //TODO generate sample data
-        generateSampleData();
 
-        //TODO Hauptmenü basteln
+        if(hospitalService.findEmployeeWithId(1) == null){
+            generateSampleData();
+        }
 
         String input = "";
         while (!input.equals("ende")) {
@@ -48,25 +45,39 @@ public class main {
 
             if (input.equals("create")) {
                 String[] patientData = Printer.getPatientData();
-                hospitalService.createStay(patientData);
+                Patient patient = hospitalService.createStay(patientData);
+                System.out.println(patient.getId());
+                System.out.println("Bitte gib die Behandlungsart ein:");
+                String treatmentString = reader.readLine();
+                System.out.println("Welcher Oberarzt ist zuständig?");
+                Employee officer = hospitalService.findEmployeeWithId(Integer.parseInt(reader.readLine()));
+                SeniorOfficer seniorOfficer = new SeniorOfficer(officer);
+                Treatment treatment = new Treatment(0, treatmentString, seniorOfficer, patient);
+                seniorOfficer.setTreatment(treatment);
+                hospitalService.createTreatment(treatment);
             } else if (input.equals("personal")) {
                 String[] personalData = Printer.getPersonalData();
-                personalService.createPersonal(personalData[0], personalData[1], LocalDate.parse(personalData[2]), new Ward(Integer.parseInt(personalData[3])), Double.valueOf(personalData[4]), personalData[5]);
+                personalService.createPersonal(personalData[0], personalData[1], LocalDate.parse(personalData[2]),
+                    new Ward(Integer.parseInt(personalData[3])), Double.valueOf(personalData[4]), personalData[5]);
+            } else if (input.equals("payment")) {
+                Printer.printPaymentTable(personalService.showPayments());
+            } else if(input.equals("patients")){
+                LocalDate startDate = Printer.getStartDate();
+                LocalDate endDate = Printer.getEndDate();
+                Printer.printPatientTable(hospitalService.getPatientsAtDate(startDate, endDate));
+            } else if (input.equals("beds")) {
+                Printer.printBedUsage(hospitalService.getUsedBeds(Integer.parseInt(Printer.getWard()), Printer.getDate()));
+            } else if (input.equals("meds")) {
+                    Printer.printMedUsage(hospitalService.getMedInTreatmentUsage());
+            } else if(input.equals("genders")){
+               Printer.printGenderTable(hospitalService.getGenderDivision());
             }
         }
     }
-    //TODO jeder Aufenthalt hat ein Treatment mit Medi
-    //TODO Personal kann erstellt werden
-    //TODO Abfrage der Gehälter
-    //TODO Abfrage der Patienten zu Zeitpunkt
-    //TODO Bettenauslastung zu Zeitpunkt
-    //TODO Welche Medi wie oft eingesetzt wird
-    //TODO Wieviele Männers oder Frauens
-
 
     private static void generateSampleData() throws SQLException, IOException {
 
-        Patient patient = new Patient(1, "Marius", "Müller", LocalDate.now(), null, null, null, LocalDate.now(), LocalDate.now());
+        Patient patient = new Patient(1, "Marius", "Müller", LocalDate.now(), null, null, null, LocalDate.now(), LocalDate.now(), "M");
         List<Patient> patients = new ArrayList<>();
         patients.add(patient);
 
@@ -94,7 +105,7 @@ public class main {
         hospitalService.createRoom(room);
         hospitalService.createEmployee(nurse);
 
-        String[] patientData = new String[7];
+        String[] patientData = new String[8];
         patientData[0] = patient.getFirstName();
         patientData[1] = patient.getLastName();
         patientData[2] = patient.getBirthdate().toString();
@@ -102,8 +113,10 @@ public class main {
         patientData[4] = String.valueOf(patient.getNurse().getPersonalnumber());
         patientData[5] = patient.getStartStay().toString();
         patientData[6] = patient.getEndStay().toString();
+        patientData[7] = patient.getGender();
         hospitalService.createStay(patientData);
         hospitalService.createEmployee(seniorOfficer);
         hospitalService.createTreatment(treatment);
     }
+
 }

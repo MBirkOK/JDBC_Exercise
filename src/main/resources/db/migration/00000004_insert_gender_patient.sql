@@ -1,0 +1,1 @@
+ALTER TABLE tab_exercise_patient ADD COLUMN gender varchar;

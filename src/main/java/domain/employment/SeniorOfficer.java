@@ -13,6 +13,11 @@ public class SeniorOfficer extends Employee {
         this.responisbleFor = treatment;
     }
 
+    public SeniorOfficer(Employee employee) {
+        super(employee.getPersonalnumber(), employee.getFirstName(), employee.getLastName(), employee.getBirthdate(),employee.getWard(), employee.getSalary());
+        this.responisbleFor = null;
+    }
+
     public Treatment getTreatment() {
         return responisbleFor;
     }

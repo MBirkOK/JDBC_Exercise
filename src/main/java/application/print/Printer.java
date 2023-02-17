@@ -1,11 +1,16 @@
 package application.print;
 
+import domain.Patient;
+import domain.employment.Employee;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.List;
 
 public class Printer {
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -45,7 +50,7 @@ public class Printer {
 
     public static String[] getPatientData() throws IOException {
         String [] patientPersonalData = getPersonData();
-        String[] patientData = new String[7];
+        String[] patientData = new String[8];
         for (int i =0; i<patientPersonalData.length; i++){
             patientData[i] = patientPersonalData[i];
         }
@@ -53,7 +58,7 @@ public class Printer {
         patientData[4] = getNurse();
         patientData[5] = getStayBegin();
         patientData[6] = getStayEnd();
-
+        patientData[7] = getGender();
         return patientData;
     }
 
@@ -138,5 +143,118 @@ public class Printer {
             return false;
         }
         return true;
+    }
+
+    public static LocalDate getStartDate() throws IOException {
+        System.out.println("Bitte gib das Datum zum Anfang des Aufenthalts an: (YYYY-MM-DD)");
+        String date = reader.readLine();
+        if(isValidDate(date)){
+            return LocalDate.parse(date);
+        }else{
+             return getStartDate();
+        }
+    }
+
+    public static LocalDate getEndDate() throws IOException {
+        System.out.println("Bitte gib das Datum zum Ende des Aufenthalts an: (YYYY-MM-DD)");
+        String date = reader.readLine();
+        if(isValidDate(date)){
+            return LocalDate.parse(date);
+        }else{
+            return getEndDate();
+        }
+    }
+
+    public static void printPaymentTable(Employee[] employees){
+        final Object[][] table = new String[employees.length+1][];
+        table[0] = new String[]{"PNr", "Vorname", "Nachname", "Gehalt"};
+        for(int i = 1; i<employees.length+1; i++){
+            table[i] = new String[]{String.valueOf(employees[i-1].getPersonalnumber()), employees[i-1].getFirstName(),
+                employees[i-1].getLastName(), String.valueOf(employees[i-1].getSalary())};
+        }
+        for (final Object[] row : table) {
+            System.out.format("%-30s%-35s%-35s%-35s%n", row);
+        }
+    }
+
+    public static void printPatientTable(Patient[] patients) {
+        final Object[][] table = new String[patients.length+1][];
+        table[0] = new String[]{"ID", "Vorname", "Nachname", "Ankunft", "Abreise"};
+        for(int i = 1; i<patients.length+1; i++){
+            table[i] = new String[]{String.valueOf(patients[i-1].getId()), patients[i-1].getFirstName(),
+                patients[i-1].getLastName(), String.valueOf(patients[i-1].getStartStay()), String.valueOf(patients[i-1].getEndStay())};
+        }
+
+        for (final Object[] row : table) {
+            System.out.format("%-30s%-35s%-35s%-35s%-35s%n", row);
+        }
+    }
+
+    public static LocalDate getDate() throws IOException {
+        System.out.println("Bitte gib das Datum: (YYYY-MM-DD)");
+        String date = reader.readLine();
+        if(isValidDate(date)){
+            return LocalDate.parse(date);
+        }else{
+            return getDate();
+        }
+    }
+    public static void printBedUsage(int[] bed) {
+        final Object[][] table = new String[2][];
+        table[0] = new String[]{"Frei", "Belegt", "Insgesamt"};
+        table[1] = new String[]{String.valueOf(bed[0]), String.valueOf(bed[1]-bed[0]), String.valueOf(bed[1])};
+
+        for (final Object[] row : table) {
+            System.out.format("%-30s%-35s%-35s%n", row);
+        }
+    }
+
+    public static void printMedUsage(List<String[]> medData) {
+        final Object[][] table = new String[medData.size()+1][];
+        table[0] = new String[]{"Anzahl", "Belegt", "Insgesamt"};
+        for(int i =0; i<medData.size(); i++){
+            table[i+1] = new String[]{
+                medData.get(i)[0],
+                medData.get(i)[1],
+                medData.get(i)[2]};
+        }
+        for (final Object[] row : table) {
+            System.out.format("%-30s%-35s%-35s%n", row);
+        }
+    }
+
+    private static String getGender() throws IOException {
+        System.out.println("Bitte Geschlecht angeben: M/W/D");
+        return reader.readLine();
+    }
+
+    public static void printGenderTable(List<Integer> genderData) {
+        final Object[][] table = new String[genderData.size()][];
+        table[0] = new String[]{"W", "M", "D", "SUMM"};
+        int men = 0, women = 0, divers = 0;
+        if(genderData.size() == 0){
+            men=0;
+            women = 0;
+            divers = 0;
+        }
+        if (genderData.size() == 1){
+            men=genderData.get(0);
+            women = 0;
+            divers = 0;
+        }
+        if (genderData.size() == 2){
+            men=genderData.get(0);
+            women = genderData.get(1);
+            divers = 0;
+        }
+        if (genderData.size() == 3){
+            men=genderData.get(0);
+            women = genderData.get(1);
+            divers = genderData.get(2);
+        }
+        table[1] = new String[]{String.valueOf(men), String.valueOf(women), String.valueOf(divers), String.valueOf(men+women+divers)};
+        for (final Object[] row : table) {
+            System.out.format("%-30s%-35s%-35s%-35s%n", row);
+        }
     }
 }

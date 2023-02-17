@@ -4,9 +4,11 @@ import application.print.Printer;
 import domain.premises.Room;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.ldap.PagedResultsControl;
@@ -38,6 +40,7 @@ public class RoomRepository {
         preparedStatement.setInt(1, wardId);
         ResultSet resultSet = preparedStatement.executeQuery();
         int lastRow = databaseHandler.getSizeResultSet(resultSet);
+        //TODO Add Ward to Room for Return
         List<Room> rooms = new ArrayList<>();
         for (int i = 0; i < lastRow; i++) {
             rooms.add(new Room(resultSet.getInt("id"), resultSet.getInt("amount_beds")));
@@ -68,5 +71,35 @@ public class RoomRepository {
             return findRoomWithIdWithoutPatients(Integer.parseInt(Printer.getRoom()));
         }
         return new Room(resultSet.getInt("id"), resultSet.getInt("amount_beds"), null);
+    }
+
+    public int[] calculateUsedBedsInWard(int wardId, LocalDate date) throws SQLException {
+        String sql = "SELECT (SELECT SUM(amount_beds) " +
+                "FROM tab_exercise_room " +
+                "WHERE ward_id = ?) - COUNT(patient)" +
+            "FROM tab_exercise_room room " +
+            "LEFT OUTER JOIN tab_exercise_patient patient ON room.id = patient.room_id " +
+            "WHERE ? BETWEEN patient.stay_start AND stay_end AND ward_id = ?";
+        PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
+        preparedStatement.setInt(1, wardId);
+        preparedStatement.setDate(2, Date.valueOf(date));
+        preparedStatement.setInt(3, wardId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        int[] result = new int[2];
+        resultSet.next();
+        result[0] = resultSet.getInt(1);
+        result[1] = getAmountAllBedsFromStation(wardId);
+
+        return result;
+    }
+
+    public int getAmountAllBedsFromStation(int wardId) throws SQLException {
+        String sql = "SELECT SUM(amount_beds) FROM tab_exercise_room WHERE ward_id = ?";
+        PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
+        preparedStatement.setInt(1, wardId);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        int result = resultSet.getInt(1);
+        return result;
     }
 }

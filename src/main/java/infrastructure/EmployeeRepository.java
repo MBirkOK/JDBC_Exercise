@@ -99,4 +99,24 @@ public class EmployeeRepository {
         }
         return employees;
     }
+
+    public Employee[] findAllEmployees() throws SQLException {
+        String sql = "SELECT pers_nr, first_name, last_name, birthday, ward_id, type, salary FROM tab_exercise_employee";
+        PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        int resultSetSize = databaseHandler.getSizeResultSet(resultSet);
+        Employee[] employees = new Employee[resultSetSize];
+        for(int i =0; i<resultSetSize; i++){
+            Ward ward = wardRepository.findWardById(resultSet.getInt("ward_id"));
+            employees[i] = new Employee(resultSet.getInt("pers_nr"), resultSet.getString("first_name"),
+                resultSet.getString("last_name"),
+                databaseHandler.convertDateToLocalDate(resultSet.getDate("birthday")), ward,
+                resultSet.getDouble("salary"));
+            if(!resultSet.next()){
+                break;
+            }
+        }
+        return employees;
+    }
 }

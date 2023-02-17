@@ -20,7 +20,9 @@ public class Patient {
 
     private LocalDate endStay;
 
-    public Patient(int id, String firstName, String lastName, LocalDate birthdate, List<Treatment> treatmentList, Room laysIn, Nurse getsTreatedBy, LocalDate startStay, LocalDate endStay) {
+    private String gender;
+
+    public Patient(int id, String firstName, String lastName, LocalDate birthdate, List<Treatment> treatmentList, Room laysIn, Nurse getsTreatedBy, LocalDate startStay, LocalDate endStay, String gender) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -30,6 +32,7 @@ public class Patient {
         this.getsTreatedBy = getsTreatedBy;
         this.startStay = startStay;
         this.endStay = endStay;
+        this.gender = gender;
     }
 
     public int getId() {
@@ -68,6 +71,10 @@ public class Patient {
         return endStay;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -98,5 +105,13 @@ public class Patient {
 
     public void setEndStay(LocalDate endStay) {
         this.endStay = endStay;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

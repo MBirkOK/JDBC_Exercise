@@ -37,6 +37,8 @@ public class DatabaseHandler {
 
     int getSizeResultSet(ResultSet set) throws SQLException {
         set.last();
-        return set.getRow();
+        int setSize = set.getRow();
+        set.first();
+        return setSize;
     }
 }
