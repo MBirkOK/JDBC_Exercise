@@ -1,6 +1,7 @@
 package domain;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -15,7 +16,8 @@ public class Literature {
     @GeneratedValue
     UUID id;
     String title;
-    String author;
+    @Embedded
+    Person author;
     @Column(name = "release_year")
     int release;
     String edition;
@@ -25,7 +27,7 @@ public class Literature {
         //for JPA
     }
 
-    public Literature(UUID id, String title, String author, int release, String edition, String publisher) {
+    public Literature(UUID id, String title, Person author, int release, String edition, String publisher) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -34,11 +36,55 @@ public class Literature {
         this.publisher = publisher;
     }
 
-    public Literature(String title, String author, int release, String edition, String publisher) {
+    public Literature(String title, Person author, int release, String edition, String publisher) {
         this.title = title;
         this.author = author;
         this.release = release;
         this.edition = edition;
+        this.publisher = publisher;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Person getAuthor() {
+        return author;
+    }
+
+    public int getRelease() {
+        return release;
+    }
+
+    public String getEdition() {
+        return edition;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void changeTitle(String title) {
+        this.title = title;
+    }
+
+    public void changeAuthor(Person author) {
+        this.author = author;
+    }
+
+    public void changeRelease(int release) {
+        this.release = release;
+    }
+
+    public void changeEdition(String edition) {
+        this.edition = edition;
+    }
+
+    public void changePublisher(String publisher) {
         this.publisher = publisher;
     }
 }

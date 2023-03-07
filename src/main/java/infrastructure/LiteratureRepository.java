@@ -5,9 +5,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 public class LiteratureRepository {
     private EntityManager entityManager;
@@ -17,7 +17,7 @@ public class LiteratureRepository {
         this.entityManager = entityManagerFactory.createEntityManager();
     }
 
-    public void safeLiterature(Literature literature){
+    public void safeLiterature(Literature literature) {
         this.entityManager.getTransaction().begin();
 
         this.entityManager.persist(literature);
@@ -25,8 +25,24 @@ public class LiteratureRepository {
         this.entityManager.getTransaction().commit();
     }
 
-    public List<Literature> findAll(){
+    public List<Literature> findAll() {
         TypedQuery<Literature> query = this.entityManager.createQuery("SELECT l FROM Literature l", Literature.class);
         return query.getResultList();
+    }
+
+    public Literature findLiteratureById(UUID id) {
+        return this.entityManager.find(Literature.class, id);
+    }
+
+    public void update(Literature literature) {
+        this.entityManager.getTransaction().begin();
+        this.entityManager.merge(literature);
+        this.entityManager.getTransaction().commit();
+    }
+
+    public void delete(Literature literature) {
+        this.entityManager.getTransaction().begin();
+        this.entityManager.remove(literature);
+        this.entityManager.getTransaction().commit();
     }
 }
