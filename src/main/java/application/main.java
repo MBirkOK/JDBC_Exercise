@@ -8,6 +8,7 @@ import domain.Person;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.IllegalCharsetNameException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
@@ -36,14 +37,29 @@ public class main {
             } else if (input.equals("all")) {
                 Printer.printAllLiterature(literaturService.getALlLiterature());
             } else if (input.equals("id")) {
-                Literature literature = literaturService.findLiteratureWithId(UUID.fromString(Printer.getLiteratureId()));
-                Printer.printDetailedInformation(literature);
+                String id = Printer.getLiteratureId();
+                if (isValidUUID(id)) {
+                    Literature literature = literaturService.findLiteratureWithId(UUID.fromString(id));
+                    Printer.printDetailedInformation(literature);
+                } else {
+                    System.out.println("Keine valide UUID, zurück ins Hauptmenü!");
+                }
             } else if (input.equals("edit")) {
                 String literature = Printer.getLiteratureId();
-                List<String> information = Printer.getAllLiteratureInformation();
-                literaturService.updateLiterature(literature, information);
-            } else if (input.equals("delete")) {
-                literaturService.delete(Printer.getLiteratureId());
+                if (isValidUUID(literature)) {
+                    List<String> information = Printer.getAllLiteratureInformation();
+                    literaturService.updateLiterature(literature, information);
+                } else {
+                    System.out.println("Keine valide UUID, zurück ins Hauptmenü!");
+                }
+            } else if (input.equals("delete")){
+                String literature = Printer.getLiteratureId();
+            if (isValidUUID(literature)) {
+                literaturService.delete(literature);
+            } else {
+                System.out.println("Keine valide UUID, zurück ins Hauptmenü!");
+            }
+
             }
         }
     }
@@ -53,6 +69,15 @@ public class main {
             Literature literature = new Literature("Test", new Person("Test",
                 "Test"), 2023, "1.", "Test");
             literaturService.createLiterature(literature);
+        }
+    }
+
+    private static boolean isValidUUID(String id) {
+        try {
+            UUID.fromString(id);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 

@@ -22,13 +22,13 @@ public class Printer {
      */
     public static void printTable() {
         System.out.println("Tippe das Wort ein um die Aktion auszuführen.");
-        final Object[][] table = new String[8][];
+        final Object[][] table = new String[6][];
         table[0] = new String[]{"Literatur erstellen", "create"};
         table[1] = new String[]{"Jede Literatur finden", "all"};
         table[2] = new String[]{"Literatur mit ID finden", "id"};
         table[3] = new String[]{"Literatur bearbeiten", "edit"};
         table[4] = new String[]{"Literatur löschen", "delete"};
-        table[7] = new String[]{"Beenden", "ende"};
+        table[5] = new String[]{"Beenden", "ende"};
 
         for (final Object[] row : table) {
             System.out.format("%-30s%-35s%n", row);
@@ -44,36 +44,6 @@ public class Printer {
             return false;
         }
         return true;
-    }
-
-    public static LocalDate getStartDate() throws IOException {
-        System.out.println("Bitte gib das Datum zum Anfang des Aufenthalts an: (YYYY-MM-DD)");
-        String date = reader.readLine();
-        if (isValidDate(date)) {
-            return LocalDate.parse(date);
-        } else {
-            return getStartDate();
-        }
-    }
-
-    public static LocalDate getEndDate() throws IOException {
-        System.out.println("Bitte gib das Datum zum Ende des Aufenthalts an: (YYYY-MM-DD)");
-        String date = reader.readLine();
-        if (isValidDate(date)) {
-            return LocalDate.parse(date);
-        } else {
-            return getEndDate();
-        }
-    }
-
-    public static LocalDate getDate() throws IOException {
-        System.out.println("Bitte gib das Datum: (YYYY-MM-DD)");
-        String date = reader.readLine();
-        if (isValidDate(date)) {
-            return LocalDate.parse(date);
-        } else {
-            return getDate();
-        }
     }
 
     public static void printAllLiterature(List<Literature> literatureList) {

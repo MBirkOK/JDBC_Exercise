@@ -24,7 +24,12 @@ public class LiteraturService {
     }
 
     public Literature findLiteratureWithId(UUID id) {
-        return this.literatureRepository.findLiteratureById(id);
+        try{
+            return this.literatureRepository.findLiteratureById(id);
+        } catch (NullPointerException e){
+            return new Literature(null, null, null, 0, null, null);
+        }
+
     }
 
     public void createLiterature(Literature literature) {
@@ -52,6 +57,18 @@ public class LiteraturService {
 
     public void delete(String id) {
         Literature literature = this.literatureRepository.findLiteratureById(UUID.fromString(id));
-        this.literatureRepository.delete(literature);
+        if(isNotNull(literature)){
+            this.literatureRepository.delete(literature);
+        }else{
+            System.out.println("Literatur nicht gefunden, zurück zum Hauptmenü!");
+        }
+    }
+
+    public boolean isNotNull(Literature literature) {
+        if (literature != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
