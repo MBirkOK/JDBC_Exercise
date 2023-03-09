@@ -1,5 +1,3 @@
-import domain.Employee;
-import domain.Inventory;
 import infrastructure.DatabaseHandler;
 
 import java.sql.SQLException;
