@@ -3,6 +3,8 @@ package application;
 import domain.Participant;
 import infrastructure.ParticipantRepositoryImpl;
 
+import java.util.UUID;
+
 public class ParticipantService {
     private ParticipantRepositoryImpl participantRepository;
 
@@ -14,7 +16,7 @@ public class ParticipantService {
         this.participantRepository = new ParticipantRepositoryImpl();
     }
 
-    public Participant createParticipant(Participant participant){
-        this.participantRepository.
+    public UUID createParticipant(Participant participant){
+        return this.participantRepository.saveParticipant(participant);
     }
 }

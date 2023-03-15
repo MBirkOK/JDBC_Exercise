@@ -17,13 +17,15 @@ public class main {
     private GroupService groupService;
     private static ParticipantService participantService;
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        participantService = new ParticipantService();
+
+
         List<Participant> participants = generateParticipants();
         Expedition expedition = generateExpedition(participants.get(0));
         Group group = generateGroup(participants, expedition);
 
         for(Participant participant: participants){
-            participant.changeGroup(group);
-            participantService.createParticipant();
+            participantService.createParticipant(participant);
         }
 
     }

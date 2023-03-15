@@ -18,5 +18,5 @@ public interface ParticipantRepository {
 
     List<Participant> findParticipantByGroup(Group group);
 
-    Participant saveParticipant(Participant participant);
+    UUID saveParticipant(Participant participant);
 }

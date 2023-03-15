@@ -4,21 +4,18 @@ import domain.Group;
 import domain.Participant;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
 
 import java.util.List;
 import java.util.UUID;
 
 public class ParticipantRepositoryImpl implements ParticipantRepository {
-    private EntityManager entityManager = EntityManagerFactoryBuilder.build().createEntityManager();
-
-    public ParticipantRepositoryImpl() {
-
-    }
+    private EntityManager entityManager = Persistence.createEntityManagerFactory("postgres").createEntityManager();
 
     @Override
     public Participant findParticipantById(UUID uuid) {
-        return null;
+        return this.entityManager.find(Participant.class, uuid);
     }
 
     @Override
@@ -42,7 +39,16 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
     }
 
     @Override
-    public Participant saveParticipant(Participant participant){
-
+    public UUID saveParticipant(Participant participant) {
+        try{
+            this.entityManager.getTransaction().begin();
+            this.entityManager.persist(participant);
+            this.entityManager.getTransaction().commit();
+            return participant.getId();
+        } catch (Exception e){
+            System.out.println(e);
+        }
+        //TODO dont return null
+        return null;
     }
 }
