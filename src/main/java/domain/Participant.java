@@ -62,4 +62,8 @@ public class Participant {
     public Group getGroup() {
         return group;
     }
+
+    public void changeGroup(Group newGroup){
+        this.group = newGroup;
+    }
 }

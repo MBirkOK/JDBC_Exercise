@@ -17,4 +17,6 @@ public interface ParticipantRepository {
     Participant findParticipantByMail(String mail);
 
     List<Participant> findParticipantByGroup(Group group);
+
+    Participant saveParticipant(Participant participant);
 }
