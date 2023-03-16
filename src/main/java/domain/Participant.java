@@ -3,19 +3,22 @@ package domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "tab_exercise_participants")
+@Table(name = "tab_exercise_participant")
 public class Participant {
 
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "participant_generator")
+    @SequenceGenerator(name = "participant_generator", sequenceName = "tab_exercise_participant_id_seq", allocationSize = 1)
+    private int id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -45,7 +48,7 @@ public class Participant {
         this.mail = mail;
     }
 
-    public UUID getId() {
+    public int getId() {
         return id;
     }
 

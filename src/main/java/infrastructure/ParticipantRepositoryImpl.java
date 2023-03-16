@@ -3,19 +3,23 @@ package infrastructure;
 import domain.Group;
 import domain.Participant;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
+import jakarta.persistence.Query;
+import jakarta.persistence.Tuple;
 
 import java.util.List;
-import java.util.UUID;
 
 public class ParticipantRepositoryImpl implements ParticipantRepository {
     private EntityManager entityManager = Persistence.createEntityManagerFactory("postgres").createEntityManager();
 
     @Override
-    public Participant findParticipantById(UUID uuid) {
-        return this.entityManager.find(Participant.class, uuid);
+    public Participant findParticipantById(int id) {
+        return this.entityManager.find(Participant.class, id);
+    }
+
+    @Override
+    public List findAll() {
+        return this.entityManager.createQuery("SELECT p FROM Participant p").getResultList();
     }
 
     @Override
@@ -39,16 +43,41 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
     }
 
     @Override
-    public UUID saveParticipant(Participant participant) {
-        try{
+    public int saveParticipant(Participant participant) {
+        try {
             this.entityManager.getTransaction().begin();
             this.entityManager.persist(participant);
             this.entityManager.getTransaction().commit();
             return participant.getId();
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
-        //TODO dont return null
-        return null;
+        //TODO dont return 0
+        return 0;
+    }
+
+    @Override
+    public int updateParticipant(Participant participant) {
+        try {
+            this.entityManager.getTransaction().begin();
+            Query query = this.entityManager.createQuery("UPDATE Participant p SET p.firstName = :first, p.lastName = :last, p.mail= :mail, p.group= :group WHERE p.id = :id");
+            query.setParameter("id", participant.getId());
+            query.setParameter("first", participant.getFirstName());
+            query.setParameter("last", participant.getLastName());
+            query.setParameter("mail", participant.getMail());
+            query.setParameter("group", participant.getGroup());
+
+            int update = query.executeUpdate();
+            this.entityManager.getTransaction().commit();
+            return update;
+        } catch (Exception e) {
+            System.out.println(e);
+            return 0;
+        }
+    }
+
+    public List<Tuple> getParticipantsAndNumberOfExpeditions(){
+        Query query = this.entityManager.createQuery("SELECT p, COUNT(e) FROM Participant p, Expedition e, Group g where p.group.expedition.id= e.id", Tuple.class);
+        return query.getResultList();
     }
 }

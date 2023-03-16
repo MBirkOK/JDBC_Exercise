@@ -8,7 +8,9 @@ import java.util.UUID;
 
 public interface ParticipantRepository {
 
-    Participant findParticipantById(UUID uuid);
+    Participant findParticipantById(int uuid);
+
+    List<Participant> findAll();
 
     List<Participant> findParticipantByFirstName(String name);
 
@@ -18,5 +20,7 @@ public interface ParticipantRepository {
 
     List<Participant> findParticipantByGroup(Group group);
 
-    UUID saveParticipant(Participant participant);
+    int saveParticipant(Participant participant);
+
+    int updateParticipant(Participant participant);
 }

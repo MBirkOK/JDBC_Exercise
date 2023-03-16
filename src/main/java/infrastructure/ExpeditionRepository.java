@@ -5,13 +5,13 @@ import domain.Participant;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 public interface ExpeditionRepository {
 
-    Expedition safeExpedition(Expedition expedition);
+    int saveExpedition(Expedition expedition);
 
-    Expedition findExpeditionById(UUID uuid);
+    Optional<Expedition> findExpeditionById(int id);
 
     Expedition findExpeditionByDate(LocalDate date);
 

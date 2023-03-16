@@ -4,7 +4,10 @@ import domain.Expedition;
 import infrastructure.ExpeditionRepository;
 import infrastructure.ExpeditionRepositoryImpl;
 
+import java.security.spec.ECPoint;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 public class ExpeditionService {
     private ExpeditionRepositoryImpl expeditionRepository;
@@ -17,7 +20,20 @@ public class ExpeditionService {
         this.expeditionRepository = new ExpeditionRepositoryImpl();
     }
 
-    public Expedition createExpedition(Expedition expedition){
-        return this.expeditionRepository.safeExpedition(expedition);
+    public int createExpedition(Expedition expedition) {
+        return this.expeditionRepository.saveExpedition(expedition);
+    }
+
+    public Expedition getExpeditionById(int id) {
+        Optional<Expedition> expedition = this.expeditionRepository.findExpeditionById(id);
+        if (expedition.isPresent()) {
+            return expedition.get();
+        }
+        //TODO dont return null
+        return null;
+    }
+
+    public List<Expedition> getAllExpeditions() {
+        return this.expeditionRepository.findAllExpeditions();
     }
 }

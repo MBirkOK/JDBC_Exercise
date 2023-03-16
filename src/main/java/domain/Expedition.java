@@ -3,18 +3,21 @@ package domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tab_exercise_expidition")
+@Table(name = "tab_exercise_expedition")
 public class Expedition {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "expedition_generator")
+    @SequenceGenerator(name = "expedition_generator", sequenceName = "tab_exercise_expedition_id_seq", allocationSize = 1)
     private int id;
 
     @Column(name = "start_date")

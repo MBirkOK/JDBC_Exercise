@@ -2,16 +2,22 @@ package domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+
+import java.io.Serializable;
+import java.util.Comparator;
 
 @Entity
 @Table(name = "tab_exercise_group")
-public class Group {
+public class Group implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "group_generator")
+    @SequenceGenerator(name = "group_generator", sequenceName = "tab_exercise_group_id_seq", allocationSize = 1)
     private int id;
     private String name;
 
@@ -48,3 +54,4 @@ public class Group {
     }
 
 }
+

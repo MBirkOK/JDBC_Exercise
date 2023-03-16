@@ -13,27 +13,45 @@ import java.util.List;
 
 public class main {
 
-    private ExpeditionService expeditionService;
-    private GroupService groupService;
+    private static ExpeditionService expeditionService;
+    private static GroupService groupService;
     private static ParticipantService participantService;
+
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         participantService = new ParticipantService();
+        expeditionService = new ExpeditionService();
+        groupService = new GroupService();
+        if(participantService.getParticipantById(1) == null){
+            generateTestData();
+        }
 
 
+        for(Participant participant: participantService.findAllParticipantsOfExpedition(expeditionService.getExpeditionById(1))){
+            System.out.println(participant.getId());
+        }
+    }
+
+    private static void generateTestData() throws SQLException, ClassNotFoundException {
         List<Participant> participants = generateParticipants();
         Expedition expedition = generateExpedition(participants.get(0));
         Group group = generateGroup(participants, expedition);
 
-        for(Participant participant: participants){
+        for (Participant participant : participants) {
             participantService.createParticipant(participant);
         }
+        expeditionService.createExpedition(expedition);
 
+        groupService.createGroup(group);
+
+        for (Participant participant : participants) {
+            participant.changeGroup(group);
+            participantService.update(participant);
+        }
     }
-
 
     private static List generateParticipants() throws SQLException, ClassNotFoundException {
         ArrayList<Participant> participants = new ArrayList<>();
-        for(int i =0; i<5; i++){
+        for (int i = 0; i < 5; i++) {
             Participant participant = new Participant("Test", "Test", "test@test.de");
             participants.add(participant);
         }
@@ -46,7 +64,7 @@ public class main {
         return group;
     }
 
-    private static Expedition generateExpedition(Participant leader){
+    private static Expedition generateExpedition(Participant leader) {
         Expedition expedition = new Expedition(LocalDate.now(), LocalDate.now().plusDays(1), leader);
         return expedition;
     }

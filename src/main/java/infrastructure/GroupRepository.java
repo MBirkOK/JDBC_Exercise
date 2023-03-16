@@ -17,4 +17,8 @@ public interface GroupRepository {
 
     List<Group> findGroupsByExpedition(Expedition expedition);
 
+    int saveGroup(Group group);
+
+    List<Group> findAllGroupsCriteria();
+
 }
