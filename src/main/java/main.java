@@ -1,6 +1,7 @@
 import application.ExpeditionService;
 import application.GroupService;
 import application.ParticipantService;
+import application.Printer;
 import domain.Expedition;
 import domain.Group;
 import domain.Participant;
@@ -21,13 +22,15 @@ public class main {
         participantService = new ParticipantService();
         expeditionService = new ExpeditionService();
         groupService = new GroupService();
-        if(participantService.getParticipantById(1) == null){
+        if (participantService.getParticipantById(1) == null) {
             generateTestData();
         }
 
 
-        for(Participant participant: participantService.findAllParticipantsOfExpedition(expeditionService.getExpeditionById(1))){
-            System.out.println(participant.getId());
+        String input = "";
+        while (input != "ende") {
+
+            input = Printer.getDecision();
         }
     }
 
