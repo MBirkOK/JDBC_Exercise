@@ -6,6 +6,7 @@ import domain.Expedition;
 import domain.Group;
 import domain.Participant;
 
+import java.io.IOException;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ public class main {
     private static GroupService groupService;
     private static ParticipantService participantService;
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
         participantService = new ParticipantService();
         expeditionService = new ExpeditionService();
         groupService = new GroupService();
@@ -29,8 +30,10 @@ public class main {
 
         String input = "";
         while (input != "ende") {
+            input = Printer.printTable();
+            switch (input){
 
-            input = Printer.getDecision();
+            }
         }
     }
 
