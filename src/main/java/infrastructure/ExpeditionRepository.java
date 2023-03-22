@@ -13,7 +13,7 @@ public interface ExpeditionRepository {
 
     Optional<Expedition> findExpeditionById(int id);
 
-    Expedition findExpeditionByDate(LocalDate date);
+    List<Expedition> findExpeditionByDate(LocalDate date);
 
     List<Expedition> findExpeditionByLeader(Participant participant);
 

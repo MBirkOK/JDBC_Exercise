@@ -33,7 +33,7 @@ public class Group implements Serializable {
         this.expedition = expedition;
     }
 
-    public Group() {
+    protected Group() {
         //forJPA
     }
 

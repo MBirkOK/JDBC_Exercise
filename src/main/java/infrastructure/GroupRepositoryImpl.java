@@ -5,6 +5,7 @@ import domain.Group;
 import domain.Participant;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -18,8 +19,10 @@ public class GroupRepositoryImpl implements GroupRepository {
     private EntityManager entityManager = Persistence.createEntityManagerFactory("postgres").createEntityManager();
 
     @Override
-    public Group findGroupById(UUID uuid) {
-        return null;
+    public Group findGroupById(int uuid) {
+        Query query = this.entityManager.createQuery("SELECT g FROM Group g WHERE g.id = :id");
+        query.setParameter("id", uuid);
+        return (Group)query.getResultList().stream().findFirst().get();
     }
 
     @Override
@@ -34,7 +37,10 @@ public class GroupRepositoryImpl implements GroupRepository {
 
     @Override
     public List<Group> findGroupsByExpedition(Expedition expedition) {
-        return null;
+        Query query = this.entityManager.createQuery("SELECT g FROM Group g WHERE g.expedition.id = :id");
+        query.setParameter("id", expedition.getId());
+
+        return query.getResultList();
     }
 
     @Override

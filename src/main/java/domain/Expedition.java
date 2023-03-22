@@ -29,7 +29,7 @@ public class Expedition {
     @ManyToOne
     private Participant leader;
 
-    public Expedition() {
+    protected Expedition() {
         //for JPA
     }
 

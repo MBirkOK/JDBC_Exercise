@@ -42,8 +42,10 @@ public class ExpeditionRepositoryImpl implements ExpeditionRepository {
     }
 
     @Override
-    public Expedition findExpeditionByDate(LocalDate date) {
-        return null;
+    public List<Expedition> findExpeditionByDate(LocalDate date) {
+        Query query = this.entityManager.createQuery("SELECT e FROM Expedition e WHERE e.startDate > :date");
+        query.setParameter("date", date);
+        return query.getResultList();
     }
 
     @Override

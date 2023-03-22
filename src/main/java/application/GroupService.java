@@ -28,12 +28,16 @@ public class GroupService {
 
     public List<Group> findGroupWithExpeditionId(Expedition expedition) {
         List<Group> groups = this.groupRepository.findGroupsByExpedition(expedition);
-        Collections.sort(groups, new GroupComparator());
+        groups.sort(new GroupComparator());
         return groups;
     }
 
     public List<Group> getAllGroupsCriteria() {
         return this.groupRepository.findAllGroupsCriteria();
+    }
+
+    public Group findGroupById(int groupId){
+        return this.groupRepository.findGroupById(groupId);
     }
 
 }

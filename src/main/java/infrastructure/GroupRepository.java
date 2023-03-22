@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface GroupRepository {
 
-    Group findGroupById(UUID uuid);
+    Group findGroupById(int uuid);
 
     Group findGroupByName(String name);
 

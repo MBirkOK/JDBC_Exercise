@@ -4,11 +4,12 @@ import domain.Group;
 import domain.Participant;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ParticipantRepository {
 
-    Participant findParticipantById(int uuid);
+    Optional<Participant> findParticipantById(int uuid);
 
     List<Participant> findAll();
 

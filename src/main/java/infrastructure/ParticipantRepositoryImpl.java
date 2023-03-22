@@ -8,13 +8,18 @@ import jakarta.persistence.Query;
 import jakarta.persistence.Tuple;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ParticipantRepositoryImpl implements ParticipantRepository {
     private EntityManager entityManager = Persistence.createEntityManagerFactory("postgres").createEntityManager();
 
     @Override
-    public Participant findParticipantById(int id) {
-        return this.entityManager.find(Participant.class, id);
+    public Optional findParticipantById(int id) {
+
+        Query query = this.entityManager.createQuery("SELECT p FROM Participant p WHERE p.id = :id");
+        query.setParameter("id", id);
+
+        return query.getResultStream().findFirst();
     }
 
     @Override
@@ -38,8 +43,11 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
     }
 
     @Override
-    public List<Participant> findParticipantByGroup(Group group) {
-        return null;
+    public List findParticipantByGroup(Group group) {
+        Query query = this.entityManager.createQuery("SELECT p FROM Participant p WHERE p.group = :group");
+        query.setParameter("group", group);
+
+        return query.getResultList();
     }
 
     @Override
@@ -76,8 +84,8 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
         }
     }
 
-    public List<Tuple> getParticipantsAndNumberOfExpeditions(){
-        Query query = this.entityManager.createQuery("SELECT p, COUNT(e) FROM Participant p, Expedition e, Group g where p.group.expedition.id= e.id", Tuple.class);
+    public List<Tuple> findParticipantsAndNumberOfExpeditions() {
+        Query query = this.entityManager.createQuery("SELECT p, COUNT(e) FROM Participant p, Expedition e where p.group.expedition.id= e.id group by p.id", Tuple.class);
         return query.getResultList();
     }
 }

@@ -24,16 +24,16 @@ public class ExpeditionService {
         return this.expeditionRepository.saveExpedition(expedition);
     }
 
-    public Expedition getExpeditionById(int id) {
+    public Optional<Expedition> getExpeditionById(int id) {
         Optional<Expedition> expedition = this.expeditionRepository.findExpeditionById(id);
-        if (expedition.isPresent()) {
-            return expedition.get();
-        }
-        //TODO dont return null
-        return null;
+        return expedition;
     }
 
     public List<Expedition> getAllExpeditions() {
         return this.expeditionRepository.findAllExpeditions();
+    }
+
+    public List<Expedition> getFutureExpeditions(){
+        return this.expeditionRepository.findExpeditionByDate(LocalDate.now());
     }
 }
