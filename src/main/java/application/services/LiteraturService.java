@@ -4,6 +4,7 @@ import domain.Literature;
 import domain.Person;
 import infrastructure.LiteratureRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public class LiteraturService {
         try{
             return this.literatureRepository.findLiteratureById(id);
         } catch (NullPointerException e){
-            return new Literature(null, null, null, 0, null, null);
+            return new Literature(null, null, null, LocalDate.now(), null, null);
         }
 
     }
@@ -38,7 +39,7 @@ public class LiteraturService {
 
     public void createLiteratureFromList(List<String> information) {
         Person person = new Person(information.get(1), information.get(2));
-        Literature literature = new Literature(information.get(0), person, Integer.parseInt(information.get(3)),
+        Literature literature = new Literature(information.get(0), person, LocalDate.parse(information.get(3)),
             information.get(4), information.get(5));
         createLiterature(literature);
     }
@@ -48,7 +49,7 @@ public class LiteraturService {
         changedLiterature.changeTitle(information.get(0));
         changedLiterature.getAuthor().changeFirstName(information.get(1));
         changedLiterature.getAuthor().changeLastName(information.get(2));
-        changedLiterature.changeRelease(Integer.parseInt(information.get(3)));
+        changedLiterature.changeRelease(LocalDate.parse(information.get(3)));
         changedLiterature.changeEdition(information.get(4));
         changedLiterature.changePublisher(information.get(5));
 

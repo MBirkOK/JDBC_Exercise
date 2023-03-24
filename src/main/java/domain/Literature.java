@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -19,15 +20,17 @@ public class Literature {
     @Embedded
     Person author;
     @Column(name = "release_year")
-    int release;
+    LocalDate release;
     String edition;
+
+    //TODO Mögliche Referenz auf neue Tabelle publisher
     String publisher;
 
     public Literature() {
         //for JPA
     }
 
-    public Literature(UUID id, String title, Person author, int release, String edition, String publisher) {
+    public Literature(UUID id, String title, Person author, LocalDate release, String edition, String publisher) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -36,7 +39,7 @@ public class Literature {
         this.publisher = publisher;
     }
 
-    public Literature(String title, Person author, int release, String edition, String publisher) {
+    public Literature(String title, Person author, LocalDate release, String edition, String publisher) {
         this.title = title;
         this.author = author;
         this.release = release;
@@ -56,7 +59,7 @@ public class Literature {
         return author;
     }
 
-    public int getRelease() {
+    public LocalDate getRelease() {
         return release;
     }
 
@@ -76,7 +79,7 @@ public class Literature {
         this.author = author;
     }
 
-    public void changeRelease(int release) {
+    public void changeRelease(LocalDate release) {
         this.release = release;
     }
 

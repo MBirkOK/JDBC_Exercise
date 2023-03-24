@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.IllegalCharsetNameException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class main {
     public main() {
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
+    public static void main(String[] args) throws IOException {
         if (literaturService.getALlLiterature().isEmpty()) {
             generateSampleData();
         }
@@ -64,10 +65,10 @@ public class main {
         }
     }
 
-    private static void generateSampleData() throws SQLException, IOException {
+    private static void generateSampleData(){
         for (int i = 0; i < 4; i++) {
             Literature literature = new Literature("Test", new Person("Test",
-                "Test"), 2023, "1.", "Test");
+                "Test"), LocalDate.now(), "1.", "Test");
             literaturService.createLiterature(literature);
         }
     }

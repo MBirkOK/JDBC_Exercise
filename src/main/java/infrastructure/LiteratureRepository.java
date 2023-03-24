@@ -19,9 +19,7 @@ public class LiteratureRepository {
 
     public void safeLiterature(Literature literature) {
         this.entityManager.getTransaction().begin();
-
         this.entityManager.persist(literature);
-
         this.entityManager.getTransaction().commit();
     }
 

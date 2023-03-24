@@ -35,17 +35,6 @@ public class Printer {
         }
     }
 
-    private static boolean isValidDate(String inDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        dateFormat.setLenient(false);
-        try {
-            dateFormat.parse(inDate.trim());
-        } catch (ParseException pe) {
-            return false;
-        }
-        return true;
-    }
-
     public static void printAllLiterature(List<Literature> literatureList) {
         final Object[][] table = new String[literatureList.size() + 1][];
         table[0] = new String[]{"ID", "Titel"};
@@ -88,8 +77,14 @@ public class Printer {
     }
 
     private static String getLiteratureRelease() throws IOException {
-        System.out.println("Bitte gib das Veröffentlichungsdatum ein:");
-        return reader.readLine();
+        try{
+            System.out.println("Bitte gib das Veröffentlichungsdatum ein:");
+            String date = reader.readLine();
+            LocalDate.parse(date);
+            return date;
+        } catch (Exception e){
+            return getLiteratureRelease();
+        }
     }
 
     private static String getLiteratureEdition() throws IOException {

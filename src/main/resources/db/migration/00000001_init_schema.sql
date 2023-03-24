@@ -6,7 +6,7 @@ CREATE TABLE tab_exercise_literature
     title        varchar,
     author_first_name varchar,
     author_last_name varchar,
-    release_year int,
+    release_year date,
     edition      varchar,
     publisher    varchar
 );
