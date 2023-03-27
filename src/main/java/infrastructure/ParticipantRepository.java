@@ -13,12 +13,6 @@ public interface ParticipantRepository {
 
     List<Participant> findAll();
 
-    List<Participant> findParticipantByFirstName(String name);
-
-    List<Participant> findParticipantByLastName(String name);
-
-    Participant findParticipantByMail(String mail);
-
     List<Participant> findParticipantByGroup(Group group);
 
     int saveParticipant(Participant participant);

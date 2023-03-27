@@ -54,8 +54,8 @@ public class ExpeditionRepositoryImpl implements ExpeditionRepository {
     }
 
     @Override
-    public List findFutureExpeditions(LocalDate startDate) {
-        Query query = this.entityManager.createQuery("SELECT e FROM Expedition e WHERE e > :now");
+    public List<Expedition> findFutureExpeditions(LocalDate startDate) {
+        Query query = this.entityManager.createQuery("SELECT e FROM Expedition e WHERE e.startDate > :now");
         query.setParameter("now", startDate);
         return query.getResultList();
     }

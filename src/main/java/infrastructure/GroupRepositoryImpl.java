@@ -6,14 +6,12 @@ import domain.Participant;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
-import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 import java.util.List;
-import java.util.UUID;
 
 public class GroupRepositoryImpl implements GroupRepository {
     private EntityManager entityManager = Persistence.createEntityManagerFactory("postgres").createEntityManager();
@@ -58,10 +56,10 @@ public class GroupRepositoryImpl implements GroupRepository {
 
     public List<Group> findAllGroupsCriteria(){
         CriteriaBuilder criteriaBuilder = this.entityManager.getCriteriaBuilder();
-        CriteriaQuery cq = criteriaBuilder.createQuery(Group.class);
-        Root root = cq.from(Group.class);
+        CriteriaQuery<Group> cq = criteriaBuilder.createQuery(Group.class);
+        Root<Group> root = cq.from(Group.class);
         cq.select(root);
-        TypedQuery typedQuery = this.entityManager.createQuery(cq);
+        TypedQuery<Group> typedQuery = this.entityManager.createQuery(cq);
         return typedQuery.getResultList();
     }
 }

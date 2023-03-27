@@ -1,10 +1,8 @@
 package application;
 
 import domain.Expedition;
-import infrastructure.ExpeditionRepository;
 import infrastructure.ExpeditionRepositoryImpl;
 
-import java.security.spec.ECPoint;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +32,6 @@ public class ExpeditionService {
     }
 
     public List<Expedition> getFutureExpeditions(){
-        return this.expeditionRepository.findExpeditionByDate(LocalDate.now());
+        return this.expeditionRepository.findFutureExpeditions(LocalDate.now());
     }
 }

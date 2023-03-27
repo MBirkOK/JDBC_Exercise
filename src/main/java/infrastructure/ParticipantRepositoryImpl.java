@@ -14,39 +14,23 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
     private EntityManager entityManager = Persistence.createEntityManagerFactory("postgres").createEntityManager();
 
     @Override
-    public Optional findParticipantById(int id) {
+    public Optional<Participant> findParticipantById(int id) {
 
-        Query query = this.entityManager.createQuery("SELECT p FROM Participant p WHERE p.id = :id");
+        Query query = this.entityManager.createQuery("SELECT p FROM Participant p WHERE p.id = :id", Participant.class);
         query.setParameter("id", id);
 
-        return query.getResultStream().findFirst();
+        return query.getResultList().stream().findFirst();
     }
 
     @Override
-    public List findAll() {
+    public List<Participant> findAll() {
         return this.entityManager.createQuery("SELECT p FROM Participant p").getResultList();
-    }
-
-    @Override
-    public List<Participant> findParticipantByFirstName(String name) {
-        return null;
-    }
-
-    @Override
-    public List<Participant> findParticipantByLastName(String name) {
-        return null;
-    }
-
-    @Override
-    public Participant findParticipantByMail(String mail) {
-        return null;
     }
 
     @Override
     public List findParticipantByGroup(Group group) {
         Query query = this.entityManager.createQuery("SELECT p FROM Participant p WHERE p.group = :group");
         query.setParameter("group", group);
-
         return query.getResultList();
     }
 
@@ -86,6 +70,8 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
     public List<Tuple> findParticipantsAndNumberOfExpeditions() {
         Query query = this.entityManager.createQuery("SELECT p, COUNT(e) FROM Participant p, Expedition e where p.group.expedition.id= e.id group by p.id", Tuple.class);
+        //TODO Native Query schreiben
+        this.entityManager.createNativeQuery("SELECT p.id, COUNT(g.expedition_id) FROM tab_exercise_participant as p, tab_exercise_group as g, tab_exercise_expedition as e WHERE p.group_id = g.id AND g.expedition_id = e.id group by p.id", Tuple.class);
         return query.getResultList();
     }
 }

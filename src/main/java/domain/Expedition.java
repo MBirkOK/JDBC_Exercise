@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -27,6 +28,7 @@ public class Expedition {
     private LocalDate endDate;
 
     @ManyToOne
+    @JoinColumn(name = "leader_id")
     private Participant leader;
 
     protected Expedition() {
