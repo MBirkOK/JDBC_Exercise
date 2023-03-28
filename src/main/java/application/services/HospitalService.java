@@ -10,8 +10,8 @@ import infrastructure.DatabaseHandler;
 import infrastructure.EmployeeRepositoryImpl;
 import infrastructure.PatientRepositoryImpl;
 import infrastructure.RoomRepositoryImpl;
-import infrastructure.TreatmentRepository;
-import infrastructure.WardRepository;
+import infrastructure.TreatmentRepositoryImpl;
+import infrastructure.WardRepositoryImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -24,15 +24,15 @@ public class HospitalService {
     private RoomRepositoryImpl roomRepositoryImpl;
     private PatientRepositoryImpl patientRepositoryImpl;
     private EmployeeRepositoryImpl employeeRepositoryImpl;
-    private WardRepository wardRepository;
-    private TreatmentRepository treatmentRepository;
+    private WardRepositoryImpl wardRepositoryImpl;
+    private TreatmentRepositoryImpl treatmentRepositoryImpl;
 
     public HospitalService() throws SQLException, ClassNotFoundException {
-        wardRepository = new WardRepository();
+        wardRepositoryImpl = new WardRepositoryImpl();
         roomRepositoryImpl = new RoomRepositoryImpl();
         patientRepositoryImpl = new PatientRepositoryImpl();
         employeeRepositoryImpl = new EmployeeRepositoryImpl();
-        treatmentRepository = new TreatmentRepository();
+        treatmentRepositoryImpl = new TreatmentRepositoryImpl();
     }
 
     public Patient createStay(String[] patientData) throws SQLException, IOException {
@@ -52,7 +52,8 @@ public class HospitalService {
     }
 
     public Ward createWard(Ward ward) throws SQLException {
-        return wardRepository.safeWard(ward);
+        int id = wardRepositoryImpl.safeWard(ward);
+        return wardRepositoryImpl.findWardById(id).get();
     }
 
     public int createRoom(Room room) throws SQLException {
@@ -63,8 +64,9 @@ public class HospitalService {
         return employeeRepositoryImpl.safeEmployee(employee);
     }
 
-    public Treatment createTreatment(Treatment treatment) throws SQLException {
-        return treatmentRepository.safeTreatment(treatment);
+    public Treatment createTreatment(Treatment treatment) throws SQLException, IOException {
+        int id = treatmentRepositoryImpl.safeTreatment(treatment);
+        return treatmentRepositoryImpl.findTreatmentById(id).get();
     }
 
     public Employee findEmployeeWithId(int id) {
@@ -90,7 +92,7 @@ public class HospitalService {
     }
 
     public List<String[]> getMedInTreatmentUsage() throws SQLException {
-        return treatmentRepository.calculateAmountOfMedicationInTreamtment();
+        return treatmentRepositoryImpl.calculateAmountOfMedicationInTreamtment();
     }
 
     public List<Integer> getGenderDivision() throws SQLException {

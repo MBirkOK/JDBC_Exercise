@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface RoomJpaRepository {
+public interface RoomRepository {
 
     int safeRoom(Room room) throws SQLException;
 

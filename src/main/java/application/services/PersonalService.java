@@ -11,7 +11,7 @@ import domain.exceptions.EmployeeTypeNotDefinedException;
 import domain.premises.Ward;
 import infrastructure.DatabaseHandler;
 import infrastructure.EmployeeRepositoryImpl;
-import infrastructure.WardRepository;
+import infrastructure.WardRepositoryImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -20,7 +20,7 @@ import java.time.LocalDate;
 public class PersonalService {
 
     private DatabaseHandler databaseHandler = new DatabaseHandler();
-    private WardRepository wardRepository = new WardRepository();
+    private WardRepositoryImpl wardRepositoryImpl = new WardRepositoryImpl();
     private EmployeeRepositoryImpl employeeRepositoryImpl = new EmployeeRepositoryImpl();
 
     public PersonalService() throws SQLException, ClassNotFoundException {
@@ -75,7 +75,7 @@ public class PersonalService {
     }
 
     private boolean doesWardExist(int wardId) throws SQLException {
-        Ward existingWard = wardRepository.findWardById(wardId);
+        Ward existingWard = wardRepositoryImpl.findWardById(wardId).get();
         //TODO dont do null checks
         if (existingWard != null) {
             return true;

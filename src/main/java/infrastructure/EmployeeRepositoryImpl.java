@@ -8,14 +8,13 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class EmployeeRepositoryImpl implements EmployeeRepository {
     private DatabaseHandler databaseHandler = new DatabaseHandler();
-    private WardRepository wardRepository = new WardRepository();
+    private WardRepositoryImpl wardRepositoryImpl = new WardRepositoryImpl();
 
 
     public EmployeeRepositoryImpl() throws SQLException, ClassNotFoundException {
@@ -58,7 +57,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
                 //TODO don't return null
                 return null;
             }
-            Ward ward = wardRepository.findWardById(result.getInt("ward_id"));
+            Ward ward = wardRepositoryImpl.findWardById(result.getInt("ward_id")).get();
             Employee employee = Employee.createEmployeeByType(result.getInt("pers_nr"), result.getString("first_name"),
                 result.getString("last_name"), databaseHandler.convertDateToLocalDate(result.getDate("birthday")),
                 ward, result.getDouble("salary"), result.getString("type"));
@@ -111,7 +110,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         int resultSetSize = databaseHandler.getSizeResultSet(resultSet);
         Employee[] employees = new Employee[resultSetSize];
         for (int i = 0; i < resultSetSize; i++) {
-            Ward ward = wardRepository.findWardById(resultSet.getInt("ward_id"));
+            Ward ward = wardRepositoryImpl.findWardById(resultSet.getInt("ward_id")).get();
             employees[i] = new Employee(resultSet.getInt("pers_nr"), resultSet.getString("first_name"),
                 resultSet.getString("last_name"),
                 databaseHandler.convertDateToLocalDate(resultSet.getDate("birthday")), ward,

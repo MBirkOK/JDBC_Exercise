@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomRepositoryImpl implements RoomJpaRepository {
+public class RoomRepositoryImpl implements RoomRepository {
     private DatabaseHandler databaseHandler = new DatabaseHandler();
 
     public RoomRepositoryImpl() throws SQLException, ClassNotFoundException {
