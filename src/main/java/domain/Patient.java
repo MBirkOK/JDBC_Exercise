@@ -2,24 +2,48 @@ package domain;
 
 import domain.employment.Nurse;
 import domain.premises.Room;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Entity
+@Table(name = "tab_exercise_patient")
 public class Patient {
+
+    @Id
     private int id;
 
+    @Column(name = "first_name")
     private String firstName;
+    @Column(name = "last_name")
     private String lastName;
+    @Column(name = "birthday")
     private LocalDate birthdate;
+    @OneToMany(mappedBy = "patient_id")
     private List<Treatment> treatmentList;
+
+    @ManyToOne
+    @JoinColumn(name = "room_id")
     private Room laysIn;
+
+    @ManyToOne
+    @JoinColumn(name = "nurse_id")
     private Nurse getsTreatedBy;
 
+    @Column(name = "stay_start")
     private LocalDate startStay;
 
+    @Column(name = "stay_end")
     private LocalDate endStay;
 
+    @Column(name = "gender")
     private String gender;
 
     public Patient(int id, String firstName, String lastName, LocalDate birthdate, List<Treatment> treatmentList, Room laysIn, Nurse getsTreatedBy, LocalDate startStay, LocalDate endStay, String gender) {
@@ -33,6 +57,10 @@ public class Patient {
         this.startStay = startStay;
         this.endStay = endStay;
         this.gender = gender;
+    }
+
+    protected Patient(){
+        //for JPA
     }
 
     public int getId() {

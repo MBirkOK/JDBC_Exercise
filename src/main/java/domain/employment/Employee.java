@@ -1,6 +1,7 @@
 package domain.employment;
 
 import domain.premises.Ward;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,16 +13,20 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "tab_exercise_employee")
-public class Employee {
+public abstract class Employee {
 
     @Id
+    @Column(name = "pers_nr")
     private int personalnumber;
+    @Column(name = "first_name")
     private String firstName;
+    @Column(name = "last_name")
     private String lastName;
+    @Column(name = "birthday")
     private LocalDate birthdate;
     @ManyToOne
     private Ward ward;
-
+    @Column(name = "salary")
     private Double salary;
 
     public Employee(int personalnumber, String firstName, String lastName, LocalDate birthdate, Ward myWard, Double salary) {
@@ -77,7 +82,7 @@ public class Employee {
             case "domain.employment.Specialist":
                 return new Specialist(personalnumber, firstName, lastName, birthdate, myWard, salary);
             default:
-                return new Employee(personalnumber, firstName, lastName, birthdate, myWard, salary);
+                return null;
         }
     }
 
