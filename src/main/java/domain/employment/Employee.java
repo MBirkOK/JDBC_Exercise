@@ -1,15 +1,25 @@
 package domain.employment;
 
 import domain.premises.Ward;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "tab_exercise_employee")
 public class Employee {
 
+    @Id
     private int personalnumber;
     private String firstName;
     private String lastName;
     private LocalDate birthdate;
+    @ManyToOne
     private Ward ward;
 
     private Double salary;
@@ -21,6 +31,10 @@ public class Employee {
         this.birthdate = birthdate;
         this.ward = myWard;
         this.salary = salary;
+    }
+
+    protected Employee(){
+        //for JPA
     }
 
     public int getPersonalnumber() {

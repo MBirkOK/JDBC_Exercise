@@ -10,7 +10,7 @@ import domain.employment.Specialist;
 import domain.exceptions.EmployeeTypeNotDefinedException;
 import domain.premises.Ward;
 import infrastructure.DatabaseHandler;
-import infrastructure.EmployeeRepository;
+import infrastructure.EmployeeRepositoryImpl;
 import infrastructure.WardRepository;
 
 import java.io.IOException;
@@ -21,17 +21,17 @@ public class PersonalService {
 
     private DatabaseHandler databaseHandler = new DatabaseHandler();
     private WardRepository wardRepository = new WardRepository();
-    private EmployeeRepository employeeRepository = new EmployeeRepository();
+    private EmployeeRepositoryImpl employeeRepositoryImpl = new EmployeeRepositoryImpl();
 
     public PersonalService() throws SQLException, ClassNotFoundException {
     }
 
-    public Employee createPersonal(String firstName, String lastName, LocalDate birthday, Ward ward, Double salary, String typ) throws SQLException, EmployeeTypeNotDefinedException, IOException {
+    public int createPersonal(String firstName, String lastName, LocalDate birthday, Ward ward, Double salary, String typ) throws SQLException, EmployeeTypeNotDefinedException, IOException {
         switch (typ) {
             case "MedicalOfficer":
                 MedicalOfficer medicalOfficer = new MedicalOfficer(0, firstName, lastName, birthday, ward, salary);
                 if (doesWardExist(ward.getId())) {
-                    return employeeRepository.safeEmployee(medicalOfficer);
+                    return employeeRepositoryImpl.safeEmployee(medicalOfficer);
                 } else {
                     System.out.println("Die Station existiert nicht. Bitte richtige Station angeben.");
                     return createPersonal(firstName, lastName, birthday, new Ward(Integer.parseInt(Printer.getWard())), salary, typ);
@@ -39,7 +39,7 @@ public class PersonalService {
             case "Nurse":
                 Nurse nurse = new Nurse(0, firstName, lastName, birthday, ward, salary, null);
                 if (doesWardExist(ward.getId())) {
-                    return employeeRepository.safeEmployee(nurse);
+                    return employeeRepositoryImpl.safeEmployee(nurse);
                 } else {
                     System.out.println("Die Station existiert nicht. Bitte richtige Station angeben.");
                     return createPersonal(firstName, lastName, birthday, new Ward(Integer.parseInt(Printer.getWard())), salary, typ);
@@ -47,7 +47,7 @@ public class PersonalService {
             case "Resident":
                 Resident resident = new Resident(0, firstName, lastName, birthday, ward, salary);
                 if (doesWardExist(ward.getId())) {
-                    return employeeRepository.safeEmployee(resident);
+                    return employeeRepositoryImpl.safeEmployee(resident);
                 } else {
                     System.out.println("Die Station existiert nicht. Bitte richtige Station angeben.");
                     return createPersonal(firstName, lastName, birthday, new Ward(Integer.parseInt(Printer.getWard())), salary, typ);
@@ -55,7 +55,7 @@ public class PersonalService {
             case "SeniorOfficer":
                 SeniorOfficer seniorOfficer = new SeniorOfficer(0, firstName, lastName, birthday, ward, salary, null);
                 if (doesWardExist(ward.getId())) {
-                    return employeeRepository.safeEmployee(seniorOfficer);
+                    return employeeRepositoryImpl.safeEmployee(seniorOfficer);
                 } else {
                     System.out.println("Die Station existiert nicht. Bitte richtige Station angeben.");
                     return createPersonal(firstName, lastName, birthday, new Ward(Integer.parseInt(Printer.getWard())), salary, typ);
@@ -63,7 +63,7 @@ public class PersonalService {
             case "Specialist":
                 Specialist specialist = new Specialist(0, firstName, lastName, birthday, ward, salary);
                 if (doesWardExist(ward.getId())) {
-                    return employeeRepository.safeEmployee(specialist);
+                    return employeeRepositoryImpl.safeEmployee(specialist);
                 } else {
                     System.out.println("Die Station existiert nicht. Bitte richtige Station angeben.");
                     return createPersonal(firstName, lastName, birthday, new Ward(Integer.parseInt(Printer.getWard())), salary, typ);
@@ -85,7 +85,7 @@ public class PersonalService {
     }
 
     public Employee[] showPayments() throws SQLException {
-        Employee[] employees = employeeRepository.findAllEmployees();
+        Employee[] employees = employeeRepositoryImpl.findAllEmployees();
         return employees;
     }
 }

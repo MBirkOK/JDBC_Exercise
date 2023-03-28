@@ -12,13 +12,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomRepository {
+public class RoomRepositoryImpl implements RoomJpaRepository {
     private DatabaseHandler databaseHandler = new DatabaseHandler();
 
-    public RoomRepository() throws SQLException, ClassNotFoundException {
+    public RoomRepositoryImpl() throws SQLException, ClassNotFoundException {
     }
 
-    public Room safeRoom(Room room) throws SQLException {
+    public int safeRoom(Room room) throws SQLException {
         String sql = "INSERT INTO tab_exercise_room(id, amount_beds, ward_id) VALUES (?,?,?)";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, room.getId());
@@ -27,7 +27,7 @@ public class RoomRepository {
 
         try {
             preparedStatement.executeUpdate();
-            return room;
+            return room.getId();
         } catch (SQLException e) {
             throw e;
         }

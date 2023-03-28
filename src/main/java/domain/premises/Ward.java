@@ -1,6 +1,11 @@
 package domain.premises;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
 public class Ward {
+    @Id
     private int id;
     private String description;
 
@@ -9,6 +14,9 @@ public class Ward {
         this.description = description;
     }
 
+    protected Ward(){
+        //for JPA
+    }
     public Ward(int id) {
         this.id = id;
     }

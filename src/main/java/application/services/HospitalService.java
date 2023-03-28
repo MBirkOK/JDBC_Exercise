@@ -7,9 +7,9 @@ import domain.employment.Nurse;
 import domain.premises.Room;
 import domain.premises.Ward;
 import infrastructure.DatabaseHandler;
-import infrastructure.EmployeeRepository;
-import infrastructure.PatientRepository;
-import infrastructure.RoomRepository;
+import infrastructure.EmployeeRepositoryImpl;
+import infrastructure.PatientRepositoryImpl;
+import infrastructure.RoomRepositoryImpl;
 import infrastructure.TreatmentRepository;
 import infrastructure.WardRepository;
 
@@ -21,33 +21,33 @@ import java.util.List;
 public class HospitalService {
 
     private DatabaseHandler databaseHandler = new DatabaseHandler();
-    private RoomRepository roomRepository;
-    private PatientRepository patientRepository;
-    private EmployeeRepository employeeRepository;
+    private RoomRepositoryImpl roomRepositoryImpl;
+    private PatientRepositoryImpl patientRepositoryImpl;
+    private EmployeeRepositoryImpl employeeRepositoryImpl;
     private WardRepository wardRepository;
     private TreatmentRepository treatmentRepository;
 
     public HospitalService() throws SQLException, ClassNotFoundException {
         wardRepository = new WardRepository();
-        roomRepository = new RoomRepository();
-        patientRepository = new PatientRepository();
-        employeeRepository = new EmployeeRepository();
+        roomRepositoryImpl = new RoomRepositoryImpl();
+        patientRepositoryImpl = new PatientRepositoryImpl();
+        employeeRepositoryImpl = new EmployeeRepositoryImpl();
         treatmentRepository = new TreatmentRepository();
     }
 
     public Patient createStay(String[] patientData) throws SQLException, IOException {
         //TODO findNurseById
-        Employee employee = employeeRepository.findEmployeeById(Integer.parseInt(patientData[4]));
-        List<Patient> patientList = patientRepository.getPatientsFromNurseId(employee.getPersonalnumber());
+        Employee employee = employeeRepositoryImpl.findEmployeeById(Integer.parseInt(patientData[4])).get();
+        List<Patient> patientList = patientRepositoryImpl.getPatientsFromNurseId(employee.getPersonalnumber());
         Nurse nurse = new Nurse(employee.getPersonalnumber(), employee.getFirstName(), employee.getLastName(),
             employee.getBirthdate(), employee.getWard(), employee.getSalary(), patientList);
         //TODO give Nurse all her/his patients
-        Room patientRoom = roomRepository.findRoomWithIdWithoutPatients(Integer.parseInt(patientData[3]));
+        Room patientRoom = roomRepositoryImpl.findRoomWithIdWithoutPatients(Integer.parseInt(patientData[3]));
         //TODO findRoomById
         Patient patient = new Patient(0, patientData[0], patientData[1], LocalDate.parse(patientData[2]),
             null, patientRoom, nurse, LocalDate.parse(patientData[5]), LocalDate.parse(patientData[6]), patientData[7]);
-        patientRepository.safePatient(patient);
-        return patientRepository.safePatient(patient);
+        patientRepositoryImpl.safePatient(patient);
+        return patientRepositoryImpl.findPatientById(patient.getId()).get();
 
     }
 
@@ -55,12 +55,12 @@ public class HospitalService {
         return wardRepository.safeWard(ward);
     }
 
-    public Room createRoom(Room room) throws SQLException {
-        return roomRepository.safeRoom(room);
+    public int createRoom(Room room) throws SQLException {
+        return roomRepositoryImpl.safeRoom(room);
     }
 
-    public Employee createEmployee(Employee employee) throws SQLException {
-        return employeeRepository.safeEmployee(employee);
+    public int createEmployee(Employee employee) throws SQLException {
+        return employeeRepositoryImpl.safeEmployee(employee);
     }
 
     public Treatment createTreatment(Treatment treatment) throws SQLException {
@@ -68,11 +68,11 @@ public class HospitalService {
     }
 
     public Employee findEmployeeWithId(int id) {
-        return employeeRepository.findEmployeeById(id);
+        return employeeRepositoryImpl.findEmployeeById(id).get();
     }
 
     public Patient[] getPatientsAtDate(LocalDate startDate, LocalDate endDate) throws SQLException, IOException {
-        List<Patient> patients = patientRepository.getPatientBetweenDates(startDate, endDate);
+        List<Patient> patients = patientRepositoryImpl.getPatientBetweenDates(startDate, endDate);
         return toArray(patients);
     }
 
@@ -85,7 +85,7 @@ public class HospitalService {
     }
 
     public int[] getUsedBeds(int wardId, LocalDate date) throws SQLException {
-        int[] usedBeds = roomRepository.calculateUsedBedsInWard(wardId, date);
+        int[] usedBeds = roomRepositoryImpl.calculateUsedBedsInWard(wardId, date);
         return usedBeds;
     }
 
@@ -94,6 +94,6 @@ public class HospitalService {
     }
 
     public List<Integer> getGenderDivision() throws SQLException {
-        return patientRepository.calculateGenderDivision();
+        return patientRepositoryImpl.calculateGenderDivision();
     }
 }
