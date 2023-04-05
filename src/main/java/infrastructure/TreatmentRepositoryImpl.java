@@ -3,14 +3,17 @@ package infrastructure;
 import domain.Patient;
 import domain.Treatment;
 import domain.employment.SeniorOfficer;
+import jakarta.persistence.EntityManager;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.xml.transform.Result;
 
 public class TreatmentRepositoryImpl implements TreatmentRepository {
     private DatabaseHandler databaseHandler = new DatabaseHandler();
@@ -22,24 +25,28 @@ public class TreatmentRepositoryImpl implements TreatmentRepository {
     public TreatmentRepositoryImpl() throws SQLException, ClassNotFoundException {
     }
 
-    public int safeTreatment(Treatment treatment) throws SQLException {
-        String sql = "INSERT INTO tab_exercise_treatment(treatment, employee_id, patient_id) VALUES (?,?,?)";
-        PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
+    @Override
+    public int safeTreatment(Treatment treatment, EntityManager entityManager) throws SQLException {
+        String sql = "INSERT INTO tab_exercise_treatment(treatment, pers_nr, patient_id) VALUES (?,?,?)";
+        PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setString(1, treatment.getTreatment());
         preparedStatement.setInt(2, treatment.getResponsible().getPersonalnumber());
         preparedStatement.setInt(3, treatment.getPatient().getId());
 
         try {
             preparedStatement.executeUpdate();
-            return treatment.getId();
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            generatedKeys.next();
+            return generatedKeys.getInt(1);
         } catch (SQLException e) {
             throw e;
         }
     }
 
-    public List<String[]> calculateAmountOfMedicationInTreamtment() throws SQLException {
-        String sql = "SELECT COUNT(med_id), description, treat.treatment FROM tab_exercise_treatment treat " +
-            "LEFT OUTER JOIN tab_exercise_med med ON treat.med_id = med.id group by treat.treatment, description";
+    @Override
+    public List<String[]> calculateAmountOfMedicationInTreamtment(EntityManager entityManager) throws SQLException {
+        String sql = "SELECT COUNT(medication_id), description, treat.treatment FROM tab_exercise_treatment treat " +
+            "LEFT OUTER JOIN tab_exercise_med med ON treat.medication_id = med.id group by treat.treatment, description";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
         List<String[]> medData = new ArrayList<>();
@@ -55,13 +62,15 @@ public class TreatmentRepositoryImpl implements TreatmentRepository {
     }
 
     @Override
-    public Optional<Treatment> findTreatmentById(int id) throws SQLException, IOException {
-        String sql = "SELECT id, treatment, employee_id, patient_id, med_id FROM tab_exercise_treatment where id = ?";
+    public Optional<Treatment> findTreatmentById(int id, EntityManager entityManager) throws SQLException, IOException {
+        String sql = "SELECT id, treatment, responsibleFor_id, patient_id, medication_id FROM tab_exercise_treatment where id = ?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
-        Patient patient = patientRepository.findPatientById(resultSet.getInt("patient_id")).get();
-        SeniorOfficer senior = (SeniorOfficer)employeeRepository.findEmployeeById(resultSet.getInt("employee_id")).get();
+        resultSet.next();
+        Patient patient = patientRepository.findPatientById(resultSet.getInt("patient_id"), entityManager).get();
+        //TODO what if Employee is not Senior?
+        SeniorOfficer senior = (SeniorOfficer)employeeRepository.findEmployeeById(resultSet.getInt("employee_id"), entityManager).get();
 
         Treatment treatment = new Treatment(resultSet.getInt("id"), resultSet.getString("treatment"), senior, patient);
 

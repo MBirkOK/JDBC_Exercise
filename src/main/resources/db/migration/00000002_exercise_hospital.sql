@@ -21,7 +21,7 @@ CREATE TABLE tab_exercise_patient(
 CREATE TABLE tab_exercise_treatment(
     id SERIAL PRIMARY KEY,
     treatment varchar(255),
-    employee_id int,
+    pers_nr int,
     patient_id int
 );
 
@@ -38,7 +38,7 @@ ALTER TABLE tab_exercise_employee ADD COLUMN salary double precision;
 ALTER TABLE tab_exercise_employee ADD CONSTRAINT FK_tab_exercise_ward_tab_exercise_employee FOREIGN KEY (ward_id) REFERENCES tab_exercise_ward(id);
 
 ALTER TABLE tab_exercise_treatment ADD CONSTRAINT FK_tab_exercise_treatment_tab_exercise_patient FOREIGN KEY (patient_id) REFERENCES tab_exercise_patient(id);
-ALTER TABLE tab_exercise_treatment ADD CONSTRAINT FK_tab_exercise_treatment_tab_exercise_employee FOREIGN KEY (employee_id) REFERENCES tab_exercise_employee(pers_nr);
+ALTER TABLE tab_exercise_treatment ADD CONSTRAINT FK_tab_exercise_treatment_tab_exercise_employee FOREIGN KEY (pers_nr) REFERENCES tab_exercise_employee(pers_nr);
 
 ALTER TABLE tab_exercise_patient ADD CONSTRAINT FK_tab_exercise_patient_tab_exercise_room FOREIGN KEY (room_id) REFERENCES tab_exercise_room(id);
 ALTER TABLE tab_exercise_patient ADD CONSTRAINT FK_tab_exercise_patient_tab_exercise_employee FOREIGN KEY (nurse_id) REFERENCES tab_exercise_employee(pers_nr);

@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Printer {
@@ -38,13 +39,13 @@ public class Printer {
     }
 
     public static String[] getPersonalData() throws IOException {
-        String[] personalData = new String[6];
-        personalData = getPersonData();
-        personalData[3] = getWard();
-        personalData[4] = getSalary();
-        personalData[5] = getType();
+        List<String> personalData = new ArrayList<>();
+        personalData.addAll(List.of(getPersonData()));
+        personalData.add(getWard());
+        personalData.add(getSalary());
+        personalData.add(getType());
 
-        return personalData;
+        return personalData.toArray(new String[0]);
     }
 
     public static String[] getPatientData() throws IOException {
@@ -193,11 +194,16 @@ public class Printer {
     public static LocalDate getDate() throws IOException {
         System.out.println("Bitte gib das Datum: (YYYY-MM-DD)");
         String date = reader.readLine();
-        if (isValidDate(date)) {
-            return LocalDate.parse(date);
-        } else {
-            return getDate();
+        try {
+            if (isValidDate(date)) {
+                return LocalDate.parse(date);
+            } else {
+                return getDate();
+            }
+        } catch (Exception e) {
+            System.out.println(e);
         }
+        return getDate();
     }
 
     public static void printBedUsage(int[] bed) {
@@ -212,12 +218,12 @@ public class Printer {
 
     public static void printMedUsage(List<String[]> medData) {
         final Object[][] table = new String[medData.size() + 1][];
-        table[0] = new String[]{"Anzahl", "Belegt", "Insgesamt"};
+        table[0] = new String[]{"Anzahl", "Medikamention", "Behandlung"};
         for (int i = 0; i < medData.size(); i++) {
             table[i + 1] = new String[]{
                 medData.get(i)[0],
                 medData.get(i)[1],
-                medData.get(i)[2]};
+            medData.get(i)[2]};
         }
         for (final Object[] row : table) {
             System.out.format("%-30s%-35s%-35s%n", row);
@@ -230,7 +236,7 @@ public class Printer {
     }
 
     public static void printGenderTable(List<Integer> genderData) {
-        final Object[][] table = new String[genderData.size()][];
+        final Object[][] table = new String[2][];
         table[0] = new String[]{"W", "M", "D", "SUMM"};
         int men = 0, women = 0, divers = 0;
         if (genderData.size() == 0) {
@@ -239,19 +245,19 @@ public class Printer {
             divers = 0;
         }
         if (genderData.size() == 1) {
-            men = genderData.get(0);
+            men = Integer.parseInt(String.valueOf(genderData.get(0)));
             women = 0;
             divers = 0;
         }
         if (genderData.size() == 2) {
-            men = genderData.get(0);
-            women = genderData.get(1);
+            men = Integer.parseInt(String.valueOf(genderData.get(0)));
+            women = Integer.parseInt(String.valueOf(genderData.get(1)));
             divers = 0;
         }
         if (genderData.size() == 3) {
-            men = genderData.get(0);
-            women = genderData.get(1);
-            divers = genderData.get(2);
+            men = Integer.parseInt(String.valueOf(genderData.get(0)));
+            women = Integer.parseInt(String.valueOf(genderData.get(1)));
+            divers = Integer.parseInt(String.valueOf(genderData.get(2)));
         }
         table[1] = new String[]{String.valueOf(men), String.valueOf(women), String.valueOf(divers), String.valueOf(men + women + divers)};
         for (final Object[] row : table) {

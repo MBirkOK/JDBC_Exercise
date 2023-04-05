@@ -1,5 +1,6 @@
 package domain;
 
+import domain.employment.Employee;
 import domain.employment.Nurse;
 import domain.premises.Room;
 import jakarta.persistence.Column;
@@ -9,6 +10,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.SQLInsert;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,16 +30,16 @@ public class Patient {
     private String lastName;
     @Column(name = "birthday")
     private LocalDate birthdate;
-    @OneToMany(mappedBy = "patient_id")
+    @OneToMany(mappedBy = "patient")
     private List<Treatment> treatmentList;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
     private Room laysIn;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "nurse_id")
-    private Nurse getsTreatedBy;
+    private Employee getsTreatedBy;
 
     @Column(name = "stay_start")
     private LocalDate startStay;
@@ -88,7 +92,7 @@ public class Patient {
     }
 
     public Nurse getNurse() {
-        return getsTreatedBy;
+        return new Nurse(getsTreatedBy);
     }
 
     public LocalDate getStartStay() {

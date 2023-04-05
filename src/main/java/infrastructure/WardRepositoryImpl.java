@@ -1,6 +1,7 @@
 package infrastructure;
 
 import domain.premises.Ward;
+import jakarta.persistence.EntityManager;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +14,8 @@ public class WardRepositoryImpl implements WardRepository {
     public WardRepositoryImpl() throws SQLException, ClassNotFoundException {
     }
 
-    public int safeWard(Ward ward) throws SQLException {
+    @Override
+    public int safeWard(Ward ward, EntityManager entityManager) throws SQLException {
         String sql = "INSERT INTO tab_exercise_ward(id, description) VALUES (?,?)";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, ward.getId());
@@ -27,7 +29,8 @@ public class WardRepositoryImpl implements WardRepository {
         }
     }
 
-    public Optional<Ward> findWardById(int id) throws SQLException {
+    @Override
+    public Optional<Ward> findWardById(int id, EntityManager entityManager) throws SQLException {
         String sql = "SELECT * FROM tab_exercise_ward WHERE id = ?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, id);

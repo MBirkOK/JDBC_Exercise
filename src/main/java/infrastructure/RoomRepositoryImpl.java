@@ -2,6 +2,7 @@ package infrastructure;
 
 import application.print.Printer;
 import domain.premises.Room;
+import jakarta.persistence.EntityManager;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -18,7 +19,8 @@ public class RoomRepositoryImpl implements RoomRepository {
     public RoomRepositoryImpl() throws SQLException, ClassNotFoundException {
     }
 
-    public int safeRoom(Room room) throws SQLException {
+    @Override
+    public int safeRoom(Room room, EntityManager entityManager) throws SQLException {
         String sql = "INSERT INTO tab_exercise_room(id, amount_beds, ward_id) VALUES (?,?,?)";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, room.getId());
@@ -33,7 +35,8 @@ public class RoomRepositoryImpl implements RoomRepository {
         }
     }
 
-    public List<Room> findRoomsByWardId(int wardId) throws SQLException {
+    @Override
+    public List<Room> findRoomsByWardId(int wardId, EntityManager entityManager) throws SQLException {
         String sql = "SELECT id, amount_beds, ward_id FROM tab_exercise_room WHERE ward_id = ?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, wardId);
@@ -47,8 +50,8 @@ public class RoomRepositoryImpl implements RoomRepository {
         return rooms;
     }
 
-
-    public List<Room> findAllRoomsWithOutPatients() throws SQLException {
+    @Override
+    public List<Room> findAllRoomsWithOutPatients(EntityManager entityManager) throws SQLException {
         String sql = "SELECT id, amount_beds, ward_id FROM tab_exercise_room";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -60,19 +63,22 @@ public class RoomRepositoryImpl implements RoomRepository {
         return rooms;
     }
 
-    public Room findRoomWithIdWithoutPatients(int id) throws SQLException, IOException {
+
+    @Override
+    public Room findRoomWithIdWithoutPatients(int id, EntityManager entityManager) throws SQLException, IOException {
         String sql = "SELECT id, amount_beds, ward_id FROM tab_exercise_room WHERE id = ?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next() == false) {
             System.out.println("Raum nicht gefunden, bitte existierenden Raum angeben!");
-            return findRoomWithIdWithoutPatients(Integer.parseInt(Printer.getRoom()));
+            return findRoomWithIdWithoutPatients(Integer.parseInt(Printer.getRoom()), null);
         }
         return new Room(resultSet.getInt("id"), resultSet.getInt("amount_beds"), null);
     }
 
-    public int[] calculateUsedBedsInWard(int wardId, LocalDate date) throws SQLException {
+    @Override
+    public int[] calculateUsedBedsInWard(int wardId, LocalDate date, EntityManager entityManager) throws SQLException {
         String sql = "SELECT (SELECT SUM(amount_beds) " +
             "FROM tab_exercise_room " +
             "WHERE ward_id = ?) - COUNT(patient)" +
@@ -87,12 +93,13 @@ public class RoomRepositoryImpl implements RoomRepository {
         int[] result = new int[2];
         resultSet.next();
         result[0] = resultSet.getInt(1);
-        result[1] = getAmountAllBedsFromStation(wardId);
+        result[1] = getAmountAllBedsFromStation(wardId, null);
 
         return result;
     }
 
-    public int getAmountAllBedsFromStation(int wardId) throws SQLException {
+    @Override
+    public int getAmountAllBedsFromStation(int wardId, EntityManager entityManager) throws SQLException {
         String sql = "SELECT SUM(amount_beds) FROM tab_exercise_room WHERE ward_id = ?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, wardId);

@@ -18,7 +18,7 @@ public class Room {
     @Id
     @Column(name = "id")
     private int id;
-    @Column(name = "ward_id")
+
     @OneToOne
     private Ward ward;
 
@@ -26,7 +26,6 @@ public class Room {
     private int amound_beds;
 
     @OneToMany(mappedBy = "laysIn")
-    @JoinColumn(referencedColumnName = "id")
     private List<Patient> patientsInRoom;
 
     public Room(int id, Ward ward, int amound_beds, List<Patient> patientsInRoom) {

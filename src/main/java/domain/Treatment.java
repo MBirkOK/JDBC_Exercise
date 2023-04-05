@@ -4,6 +4,8 @@ import domain.employment.SeniorOfficer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -15,15 +17,21 @@ public class Treatment {
     @Column(name = "treatment")
     private String treatment;
 
-    @OneToOne
+    @OneToOne()
+    @JoinColumn(name = "pers_nr")
     private SeniorOfficer responsible;
-    @Column(name = "patient_id")
-    @OneToOne
+
+    @ManyToOne
     private Patient patient;
 
-    @Column(name = "med_id")
     @OneToOne
     private Medication medication;
+
+    public Treatment(String treatment, SeniorOfficer responsible, Patient patient) {
+        this.treatment = treatment;
+        this.responsible = responsible;
+        this.patient = patient;
+    }
 
     public Treatment(int id, String treatment, SeniorOfficer responsible, Patient patient) {
         this.id = id;

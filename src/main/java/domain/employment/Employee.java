@@ -1,20 +1,22 @@
 package domain.employment;
 
+import domain.AbstractEntity;
 import domain.premises.Ward;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "tab_exercise_employee")
-public abstract class Employee {
-
+@DiscriminatorColumn(name = "type")
+public class Employee extends AbstractEntity {
     @Id
     @Column(name = "pers_nr")
     private int personalnumber;
@@ -29,6 +31,9 @@ public abstract class Employee {
     @Column(name = "salary")
     private Double salary;
 
+    @Transient
+    private String type;
+
     public Employee(int personalnumber, String firstName, String lastName, LocalDate birthdate, Ward myWard, Double salary) {
         this.personalnumber = personalnumber;
         this.firstName = firstName;
@@ -38,7 +43,15 @@ public abstract class Employee {
         this.salary = salary;
     }
 
-    protected Employee(){
+    public Employee(String firstName, String lastName, LocalDate birthdate, Ward myWard, Double salary) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthdate = birthdate;
+        this.ward = myWard;
+        this.salary = salary;
+    }
+
+    protected Employee() {
         //for JPA
     }
 
@@ -69,17 +82,17 @@ public abstract class Employee {
     public static Employee createEmployeeByType(int personalnumber, String firstName, String lastName, LocalDate birthdate, Ward myWard, Double salary, String type) {
         //TODO Query the Wards
         switch (type) {
-            case "domain.employment.MedicalOfficer":
+            case "class domain.employment.MedicalOfficer":
                 return new MedicalOfficer(personalnumber, firstName, lastName, birthdate, myWard, salary);
-            case "domain.employment.Nurse":
+            case "class domain.employment.Nurse":
                 //TODO query the list of patients to care for
-                return new Nurse(personalnumber, firstName, lastName, birthdate, myWard, salary, null);
-            case "domain.employment.Resident":
+                return new Nurse(personalnumber, firstName, lastName, birthdate, myWard, salary);
+            case "class domain.employment.Resident":
                 return new Resident(personalnumber, firstName, lastName, birthdate, myWard, salary);
-            case "domain.employent.SeniorOfficer":
+            case "class domain.employment.SeniorOfficer":
                 //TODO Query the Treatments
                 return new SeniorOfficer(personalnumber, firstName, lastName, birthdate, myWard, salary, null);
-            case "domain.employment.Specialist":
+            case "class domain.employment.Specialist":
                 return new Specialist(personalnumber, firstName, lastName, birthdate, myWard, salary);
             default:
                 return null;
@@ -106,4 +119,12 @@ public abstract class Employee {
         this.salary = salary;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    @Override
+        protected Object getId() {
+            return this.personalnumber;
+    }
 }

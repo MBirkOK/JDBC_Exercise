@@ -1,6 +1,7 @@
 package infrastructure;
 
 import domain.Patient;
+import jakarta.persistence.EntityManager;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -10,13 +11,13 @@ import java.util.Optional;
 
 public interface PatientRepository {
 
-    int safePatient(Patient patient) throws SQLException;
+    int safePatient(Patient patient, EntityManager entityManager) throws SQLException;
 
-    Optional<Patient> findPatientById(int id) throws SQLException, IOException;
+    Optional<Patient> findPatientById(int id, EntityManager entityManager) throws SQLException, IOException;
 
-    List<Patient> getPatientsFromNurseId(int nurseId) throws SQLException, IOException;
+    List<Patient> getPatientsFromNurseId(int nurseId, EntityManager entityManager) throws SQLException, IOException;
 
-    List<Patient> getPatientBetweenDates(LocalDate startDate, LocalDate endDate) throws SQLException, IOException;
+    List<Patient> getPatientBetweenDates(LocalDate startDate, LocalDate endDate, EntityManager entityManager) throws SQLException, IOException;
 
-    List<Integer> calculateGenderDivision() throws SQLException;
+    List<Integer> calculateGenderDivision(EntityManager entityManager) throws SQLException;
 }

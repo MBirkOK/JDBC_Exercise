@@ -3,6 +3,7 @@ package infrastructure;
 import domain.employment.Employee;
 import domain.employment.MedicalOfficer;
 import domain.premises.Ward;
+import jakarta.persistence.EntityManager;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -28,7 +29,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
      * @return the original Object
      * @throws SQLException
      */
-    public int safeEmployee(Employee employee) {
+    @Override
+    public int safeEmployee(Employee employee, EntityManager entityManager) {
         try {
             String sql = "INSERT INTO tab_exercise_employee(first_name, last_name, birthday, ward_id, type, salary) VALUES  (?,?,?,?,?,?)";
             PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
@@ -36,7 +38,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             preparedStatement.setString(2, employee.getLastName());
             preparedStatement.setDate(3, Date.valueOf(employee.getBirthdate()));
             preparedStatement.setInt(4, employee.getWard().getId());
-            preparedStatement.setString(5, employee.getClass().toString());
+            preparedStatement.setString(5, employee.getClass().getSimpleName());
             preparedStatement.setDouble(6, employee.getSalary());
             preparedStatement.executeUpdate();
             return employee.getPersonalnumber();
@@ -47,7 +49,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         }
     }
 
-    public Optional<Employee> findEmployeeById(int id) {
+    @Override
+    public Optional<Employee> findEmployeeById(int id, EntityManager entityManager) {
         try {
             String sql = "SELECT pers_nr, first_name, last_name, birthday, ward_id, type, salary from tab_exercise_employee e INNER JOIN tab_exercise_ward on ward_id = tab_exercise_ward.id where pers_nr=?";
             PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
@@ -55,9 +58,9 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             ResultSet result = preparedStatement.executeQuery();
             if (result.next() == false) {
                 //TODO don't return null
-                return null;
+                return Optional.ofNullable(null);
             }
-            Ward ward = wardRepositoryImpl.findWardById(result.getInt("ward_id")).get();
+            Ward ward = wardRepositoryImpl.findWardById(result.getInt("ward_id"), null).get();
             Employee employee = Employee.createEmployeeByType(result.getInt("pers_nr"), result.getString("first_name"),
                 result.getString("last_name"), databaseHandler.convertDateToLocalDate(result.getDate("birthday")),
                 ward, result.getDouble("salary"), result.getString("type"));
@@ -67,7 +70,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         }
     }
 
-    public Optional<MedicalOfficer> findMedicalById(int id) throws SQLException {
+    @Override
+    public Optional<MedicalOfficer> findMedicalById(int id, EntityManager entityManager) throws SQLException {
         String sql = "SELECT pers_nr, first_name, last_name, birthday, salary FROM tab_exercise_employee WHERE pers_nr = ?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, id);
@@ -83,7 +87,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         return med;
     }
 
-    public List<Employee> findEmployeesByWardId(int wardId) throws SQLException {
+    @Override
+    public List<Employee> findEmployeesByWardId(int wardId, EntityManager entityManager) throws SQLException {
         String sql = "SELECT pers_nr, first_name, last_name, birthday FROM tab_exercise_employee WHERE ward_id = ?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, wardId);
@@ -102,7 +107,8 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         return employees;
     }
 
-    public Employee[] findAllEmployees() throws SQLException {
+    @Override
+    public Employee[] findAllEmployees(EntityManager entityManager) throws SQLException {
         String sql = "SELECT pers_nr, first_name, last_name, birthday, ward_id, type, salary FROM tab_exercise_employee";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -110,7 +116,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         int resultSetSize = databaseHandler.getSizeResultSet(resultSet);
         Employee[] employees = new Employee[resultSetSize];
         for (int i = 0; i < resultSetSize; i++) {
-            Ward ward = wardRepositoryImpl.findWardById(resultSet.getInt("ward_id")).get();
+            Ward ward = wardRepositoryImpl.findWardById(resultSet.getInt("ward_id"), null).get();
             employees[i] = new Employee(resultSet.getInt("pers_nr"), resultSet.getString("first_name"),
                 resultSet.getString("last_name"),
                 databaseHandler.convertDateToLocalDate(resultSet.getDate("birthday")), ward,

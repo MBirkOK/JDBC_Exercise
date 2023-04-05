@@ -4,6 +4,7 @@ import domain.Patient;
 import domain.employment.Employee;
 import domain.employment.Nurse;
 import domain.premises.Room;
+import jakarta.persistence.EntityManager;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -24,7 +25,8 @@ public class PatientRepositoryImpl implements PatientRepository {
     public PatientRepositoryImpl() throws SQLException, ClassNotFoundException {
     }
 
-    public int safePatient(Patient patient) throws SQLException {
+    @Override
+    public int safePatient(Patient patient, EntityManager entityManager) throws SQLException {
         try {
             String sql = "INSERT INTO tab_exercise_patient(first_name, last_name, birthday, room_id, nurse_id, stay_start, stay_end, gender) VALUES( ?, ?, ?, ?, ?, ?, ?,?)";
             PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -46,25 +48,26 @@ public class PatientRepositoryImpl implements PatientRepository {
             throw e;
         }
     }
-
-    public Optional<Patient> findPatientById(int id) throws SQLException, IOException {
-        String sql = "SELECT id, first_name, last_name, birthday, room_id, stay_start, stay_end, gender FROM tab_exercise_patient WHERE id = ?";
+    @Override
+    public Optional<Patient> findPatientById(int id, EntityManager entityManager) throws SQLException, IOException {
+        String sql = "SELECT id, first_name, last_name, birthday, room_id, nurse_id, stay_start, stay_end, gender FROM tab_exercise_patient WHERE id = ?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
-        Room room = roomRepositoryImpl.findRoomWithIdWithoutPatients(resultSet.getInt("room_id"));
-        Employee employeeNurse = employeeRepositoryImpl.findEmployeeById(resultSet.getInt("nurse_id")).get();
+        resultSet.next();
+        Room room = roomRepositoryImpl.findRoomWithIdWithoutPatients(resultSet.getInt("room_id"), null);
+        Employee employeeNurse = employeeRepositoryImpl.findEmployeeById(resultSet.getInt("nurse_id"), null).get();
         Nurse nurse = new Nurse(employeeNurse.getPersonalnumber(), employeeNurse.getFirstName(),
             employeeNurse.getLastName(), employeeNurse.getBirthdate(), employeeNurse.getWard(),
-            employeeNurse.getSalary(), null);
+            employeeNurse.getSalary());
 
         return Optional.of(new Patient(resultSet.getInt("id"), resultSet.getString("first_name"),
             resultSet.getString("last_name"), databaseHandler.convertDateToLocalDate(resultSet.getDate("birthday")), null,
             room, nurse, databaseHandler.convertDateToLocalDate(resultSet.getDate("stay_start")),
             databaseHandler.convertDateToLocalDate(resultSet.getDate("stay_end")), resultSet.getString("gender")));
     }
-
-    public List<Patient> getPatientsFromNurseId(int nurseId) throws SQLException, IOException {
+    @Override
+    public List<Patient> getPatientsFromNurseId(int nurseId, EntityManager entityManager) throws SQLException, IOException {
         String sql = "SELECT id, first_name, last_name, birthday, room_id, stay_start, stay_end, gender FROM tab_exercise_patient WHERE nurse_id = ?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setInt(1, nurseId);
@@ -72,7 +75,7 @@ public class PatientRepositoryImpl implements PatientRepository {
         ResultSet resultSet = preparedStatement.executeQuery();
         List<Patient> patients = new ArrayList<>();
         while (resultSet.next()) {
-            Room room = roomRepositoryImpl.findRoomWithIdWithoutPatients(resultSet.getInt("room_id"));
+            Room room = roomRepositoryImpl.findRoomWithIdWithoutPatients(resultSet.getInt("room_id"), null);
             patients.add(new Patient(resultSet.getInt("id"), resultSet.getString("first_name"),
                 resultSet.getString("last_name"),
                 databaseHandler.convertDateToLocalDate(resultSet.getDate("birthday")),
@@ -82,8 +85,8 @@ public class PatientRepositoryImpl implements PatientRepository {
         }
         return patients;
     }
-
-    public List<Patient> getPatientBetweenDates(LocalDate startDate, LocalDate endDate) throws SQLException, IOException {
+    @Override
+    public List<Patient> getPatientBetweenDates(LocalDate startDate, LocalDate endDate, EntityManager entityManager) throws SQLException, IOException {
         String sql = "SELECT id, first_name, last_name, birthday, room_id, nurse_id, stay_start, stay_end, gender FROM tab_exercise_patient WHERE stay_start >=? AND stay_end <=?";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         preparedStatement.setDate(1, Date.valueOf(startDate));
@@ -92,11 +95,11 @@ public class PatientRepositoryImpl implements PatientRepository {
         ResultSet resultSet = preparedStatement.executeQuery();
         List<Patient> patients = new ArrayList<>();
         while (resultSet.next()) {
-            Room room = roomRepositoryImpl.findRoomWithIdWithoutPatients(resultSet.getInt("room_id"));
-            Employee employeeNurse = employeeRepositoryImpl.findEmployeeById(resultSet.getInt("nurse_id")).get();
+            Room room = roomRepositoryImpl.findRoomWithIdWithoutPatients(resultSet.getInt("room_id"), null);
+            Employee employeeNurse = employeeRepositoryImpl.findEmployeeById(resultSet.getInt("nurse_id"), null).get();
             Nurse nurse = new Nurse(employeeNurse.getPersonalnumber(), employeeNurse.getFirstName(),
                 employeeNurse.getLastName(), employeeNurse.getBirthdate(), employeeNurse.getWard(),
-                employeeNurse.getSalary(), null);
+                employeeNurse.getSalary());
             patients.add(new Patient(resultSet.getInt("id"), resultSet.getString("first_name"),
                 resultSet.getString("last_name"), databaseHandler.convertDateToLocalDate(resultSet.getDate("birthday")), null,
                 room, nurse, databaseHandler.convertDateToLocalDate(resultSet.getDate("stay_start")),
@@ -104,8 +107,8 @@ public class PatientRepositoryImpl implements PatientRepository {
         }
         return patients;
     }
-
-    public List<Integer> calculateGenderDivision() throws SQLException {
+    @Override
+    public List<Integer> calculateGenderDivision(EntityManager entityManager) throws SQLException {
         String sql = "SELECT COUNT(*) FROM tab_exercise_patient GROUP BY gender";
         PreparedStatement preparedStatement = databaseHandler.establishConnection().prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery();
